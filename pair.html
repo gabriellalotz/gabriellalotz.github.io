@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Programming Algorithms Matching Game</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="pair.js" defer></script>
+  </head>
+  <body>
+    <div class="game-container">
+      <h1>🧮 Programming Algorithms</h1>
+      <p class="subtitle">Match the programming algorithms with their descriptions!</p>
+
+      <div class="game-stats">
+        <div class="stat-item">Score: <span id="score">0</span></div>
+        <div class="stat-item">Matches: <span id="matches">0</span>/6</div>
+        <div class="stat-item">Attempts: <span id="attempts">0</span></div>
+        <div class="stat-item">Accuracy: <span id="accuracy">100</span>%</div>
+      </div>
+
+      <button class="btn small" onclick="checkMatch()">Submit Match</button>
+
+      <div class="game-board">
+        <div class="pair-row">
+          <div id="algorithms" class="pair-column"></div>
+          <div id="descriptions" class="pair-column"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn secondary" onclick="newGame()">New Game</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </body>
+</html>
