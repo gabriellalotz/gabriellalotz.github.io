@@ -1,1 +1,3 @@
-# gabriellalotz.github.io
+Hello and welcome!
+
+This website is currently a line of games:)
