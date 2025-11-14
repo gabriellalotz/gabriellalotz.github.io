@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Apache Kudu 1.6.0 Release Notes</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li class="active">
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li >
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-9">
+
+<h1>Apache Kudu 1.6.0 Release Notes</h1>
+      <div class="sect1">
+<h2 id="rn_1.6.0_upgrade_notes"><a class="link" href="#rn_1.6.0_upgrade_notes">Upgrade Notes</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Upgrading directly from Kudu 1.5.0 is supported and no special upgrade steps
+are required. A rolling upgrade may work, however it has not been tested.
+When upgrading Kudu, it is recommended to first shut down all Kudu processes
+across the cluster, then upgrade the software on all servers, then restart
+the Kudu processes on all servers in the cluster.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.6.0_obsoletions"><a class="link" href="#rn_1.6.0_obsoletions">Obsoletions</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Support for Spark 1 (kudu-spark_2.10) has been <strong>removed</strong> in Kudu 1.6.0 and
+now only Spark 2 is supported. Spark 1 support was deprecated in Kudu 1.5.0.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.6.0_deprecations"><a class="link" href="#rn_1.6.0_deprecations">Deprecations</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Support for Java 7 has been deprecated since Kudu 1.5.0 and may be removed in
+the next major release.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.6.0_new_features"><a class="link" href="#rn_1.6.0_new_features">New features</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Tablet servers' tolerance of disk failures is now enabled by default and has
+been extended to handle data directory failures at runtime. In the event of
+a disk failure at runtime, any tablets with data on a failed disk will be
+shut down and restarted on another tablet server. There is a configurable
+tradeoff between a newly added tablet&#8217;s tolerance to disk failures and its
+ability to parallelize reads via the experimental
+<code>--fs_target_data_dirs_per_tablet</code> flag. Tablets that are spread across fewer
+disks are less likely to be affected by a disk failure, at the cost of
+reduced parallelism. By default, tablets are striped across all available
+disks. Note that the first configured data directory and the WAL directory
+cannot currently tolerate disk failures. This will be further improved in
+future Kudu releases.</p>
+</li>
+<li>
+<p>Kudu servers can now adopt new data directories via the new
+<code>kudu fs update_dirs</code> tool. The new directory will be used by new tablet
+replicas only. Note that removing directories is not yet supported
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2202">KUDU-2202</a>).</p>
+</li>
+<li>
+<p>Kudu servers have two new flags to control webui TLS/HTTPS
+settings: <code>--webserver_tls_ciphers</code> and <code>--webserver_tls_min_protocol</code>.
+These flags allow the advertised TLS ciphers and TLS protocol versions to be
+configured. Additionally, the webserver now excludes insecure legacy ciphers
+by default
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2190">KUDU-2190</a>).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_optimizations_and_improvements"><a class="link" href="#_optimizations_and_improvements">Optimizations and improvements</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu servers can now tolerate short interruptions in NTP clock
+synchronization. NTP synchronization is still required when any Kudu daemon
+starts up. If NTP synchronization is not available, diagnostic information
+is now logged to help pinpoint the issue
+(see <a href="https://issues.apache.org/jira/browse/KUDU-1578">KUDU-1578</a>).</p>
+</li>
+<li>
+<p>Tablet server startup time has been improved significantly on servers
+containing large numbers of blocks.</p>
+</li>
+<li>
+<p>The log block manager now performs disk data deletion in batches. This
+optimization can significantly reduce the time taken to delete data on a tablet.</p>
+</li>
+<li>
+<p>The usage of sensitive data redaction flag has been slightly changed. By
+setting <code>--redact=log</code> flag, redaction will be disabled in the web UI but
+retained for server logs. Alternatively, <code>--redact=none</code> can be used to
+disable redaction completely.</p>
+</li>
+<li>
+<p>The Spark DataSource integration now can take advantage of scan locality
+for better scan performance, the scan will take place at the closest replica
+instead of going to the leader.</p>
+</li>
+<li>
+<p>Various optimizations were made to reduce the 99th percentile latency of
+writes on the tablet server. This can also improve throughput on certain
+write workloads, particularly on larger clusters.</p>
+</li>
+<li>
+<p>Kudu may now be configured to ignore system-wide auth_to_local mappings
+configured in /etc/krb5.conf by setting the configuration flag
+<code>--use_system_auth_to_local=false</code>
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2198">KUDU-2198</a>).</p>
+</li>
+<li>
+<p>The performance of the compaction scheduler has been improved. In
+previous versions, certain types of time series workloads were found to
+cause compaction scheduling to take tens of seconds. These workloads now
+schedule compactions an order of magnitude more efficiently.</p>
+</li>
+<li>
+<p>The compaction scheduler has been improved to avoid running a compaction
+when the benefit of that compaction is extremely small.</p>
+</li>
+<li>
+<p>Tablet servers now consider the health of all replicas of a tablet before
+deciding to evict one. This can improve stability of the Kudu cluster after
+experiencing multiple simultaneous daemon failures
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2048">KUDU-2048</a>).</p>
+</li>
+<li>
+<p>Several performance improvements have been made to the Kudu master,
+particularly in concurrency of clients opening tables. This should improve
+performance in highly concurrent workloads.</p>
+</li>
+<li>
+<p>The on-disk size metric for a tablet now includes all data and metadata.
+Previously, it excluded WAL segments and consensus metadata
+(see <a href="https://issues.apache.org/jira/browse/KUDU-1755">KUDU-1755</a>).</p>
+</li>
+<li>
+<p>Added verbose mode for the 'kudu cluster ksck' command to enable output
+of detailed information on the cluster&#8217;s metadata, even when no errors are
+detected.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.6.0_fixed_issues"><a class="link" href="#rn_1.6.0_fixed_issues">Fixed Issues</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>HybridTime timestamp propagation now works in the Java client when using scan
+tokens (see <a href="https://issues.apache.org/jira/browse/KUDU-1411">KUDU-1411</a>).</p>
+</li>
+<li>
+<p>Fixed an error message commonly found in tablet server logs indicating that
+operations were being read "from the future"
+(see <a href="https://issues.apache.org/jira/browse/KUDU-1078">KUDU-1078</a>).</p>
+</li>
+<li>
+<p>Tombstoned tablets no longer report metrics
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2044">KUDU-2044</a>).</p>
+</li>
+<li>
+<p>Fixed a bug in the C++ client which could cause tablets to be erroneously
+pruned, or skipped, during certain scans, resulting in fewer results than
+expected being returned from queries. The bug only affected tables whose range
+partition columns are a proper prefix of the primary key
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2173">KUDU-2173</a>).</p>
+</li>
+<li>
+<p>Published Kudu Java artifacts are now fully compatible with JRE 7 and JRE 8.
+There was previously a bug in the release process which made them compatible
+only with JRE 8
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2188">KUDU-2188</a>).</p>
+</li>
+<li>
+<p>Fixed a typo in the list of default TLS ciphers used by Kudu servers. As a
+result, two additional cipher suites are now available:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>ECDHE-RSA-AES128-SHA256 TLSv1.2 Kx=ECDH Au=RSA Enc=AES(128)  Mac=SHA256</p>
+</li>
+<li>
+<p>AES256-GCM-SHA384       TLSv1.2 Kx=RSA  Au=RSA Enc=AESGCM(256) Mac=AEAD</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.6.0_wire_compatibility"><a class="link" href="#rn_1.6.0_wire_compatibility">Wire Protocol compatibility</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu 1.6.0 is wire-compatible with previous versions of Kudu:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu 1.6 clients may connect to servers running Kudu 1.0 or later. If the client uses
+features that are not available on the target server, an error will be returned.</p>
+</li>
+<li>
+<p>Rolling upgrade between Kudu 1.5 and Kudu 1.6 servers is believed to be possible
+though has not been sufficiently tested. Users are encouraged to shut down all nodes
+in the cluster, upgrade the software, and then restart the daemons on the new version.</p>
+</li>
+<li>
+<p>Kudu 1.0 clients may connect to servers running Kudu 1.6 with the exception of the
+below-mentioned restrictions regarding secure clusters.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The authentication features introduced in Kudu 1.3 place the following limitations
+on wire compatibility between Kudu 1.6 and versions earlier than 1.3:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If a Kudu 1.6 cluster is configured with authentication or encryption set to "required",
+clients older than Kudu 1.3 will be unable to connect.</p>
+</li>
+<li>
+<p>If a Kudu 1.6 cluster is configured with authentication and encryption set to "optional"
+or "disabled", older clients will still be able to connect.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.6.0_incompatible_changes"><a class="link" href="#rn_1.6.0_incompatible_changes">Incompatible Changes in Kudu 1.6.0</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="rn_1.6.0_client_compatibility"><a class="link" href="#rn_1.6.0_client_compatibility">Client Library Compatibility</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The Kudu 1.6 Java client library is API- and ABI-compatible with Kudu 1.5. Applications
+written against Kudu 1.5 will compile and run against the Kudu 1.6 client library and
+vice-versa.</p>
+</li>
+<li>
+<p>The Kudu 1.6 C++ client is API- and ABI-forward-compatible with Kudu 1.5.
+Applications written and compiled against the Kudu 1.5 client library will run without
+modification against the Kudu 1.6 client library. Applications written and compiled
+against the Kudu 1.6 client library will run without modification against the Kudu 1.5
+client library.</p>
+</li>
+<li>
+<p>The Kudu 1.6 Python client is API-compatible with Kudu 1.5. Applications
+written against Kudu 1.5 will continue to run against the Kudu 1.6 client
+and vice-versa.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.6.0_known_issues"><a class="link" href="#rn_1.6.0_known_issues">Known Issues and Limitations</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Please refer to the <a href="known_issues.html">Known Issues and Limitations</a> section of the
+documentation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.6.0_contributors"><a class="link" href="#rn_1.6.0_contributors">Contributors</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu 1.6 includes contributions from 14 people, including one
+first-time contributor, Hector Camarena.</p>
+</div>
+<div class="paragraph">
+<p>Thanks for helping to make Kudu even better!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="resources_and_next_steps"><a class="link" href="#resources_and_next_steps">Resources</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://kudu.apache.org">Kudu Website</a></p>
+</li>
+<li>
+<p><a href="http://github.com/apache/kudu">Kudu GitHub Repository</a></p>
+</li>
+<li>
+<p><a href="index.html">Kudu Documentation</a></p>
+</li>
+<li>
+<p><a href="prior_release_notes.html">Release notes for older releases</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installation_options"><a class="link" href="#_installation_options">Installation Options</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For full installation details, see <a href="installation.html">Kudu Installation</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_next_steps"><a class="link" href="#_next_steps">Next Steps</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="quickstart.html">Kudu Quickstart</a></p>
+</li>
+<li>
+<p><a href="installation.html">Installing Kudu</a></p>
+</li>
+<li>
+<p><a href="configuration.html">Configuring Kudu</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+    </div>
+    <div class="col-md-3">
+
+  <div id="toc" data-spy="affix" data-offset-top="70">
+  <ul>
+
+      <li>
+
+          <a href="index.html">Introducing Kudu</a> 
+      </li> 
+      <li>
+<span class="active-toc">Kudu Release Notes</span>
+            <ul class="sectlevel1">
+<li><a href="#rn_1.6.0_upgrade_notes">Upgrade Notes</a></li>
+<li><a href="#rn_1.6.0_obsoletions">Obsoletions</a></li>
+<li><a href="#rn_1.6.0_deprecations">Deprecations</a></li>
+<li><a href="#rn_1.6.0_new_features">New features</a></li>
+<li><a href="#_optimizations_and_improvements">Optimizations and improvements</a></li>
+<li><a href="#rn_1.6.0_fixed_issues">Fixed Issues</a></li>
+<li><a href="#rn_1.6.0_wire_compatibility">Wire Protocol compatibility</a></li>
+<li><a href="#rn_1.6.0_incompatible_changes">Incompatible Changes in Kudu 1.6.0</a>
+<ul class="sectlevel2">
+<li><a href="#rn_1.6.0_client_compatibility">Client Library Compatibility</a></li>
+</ul>
+</li>
+<li><a href="#rn_1.6.0_known_issues">Known Issues and Limitations</a></li>
+<li><a href="#rn_1.6.0_contributors">Contributors</a></li>
+<li><a href="#resources_and_next_steps">Resources</a></li>
+<li><a href="#_installation_options">Installation Options</a></li>
+<li><a href="#_next_steps">Next Steps</a></li>
+</ul> 
+      </li> 
+      <li>
+
+          <a href="quickstart.html">Getting Started with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="installation.html">Installation Guide</a> 
+      </li> 
+      <li>
+
+          <a href="configuration.html">Configuring Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="kudu_impala_integration.html">Using Impala with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="administration.html">Administering Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="troubleshooting.html">Troubleshooting Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="developing.html">Developing Applications with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="schema_design.html">Kudu Schema Design</a> 
+      </li> 
+      <li>
+
+          <a href="security.html">Kudu Security</a> 
+      </li> 
+      <li>
+
+          <a href="transaction_semantics.html">Kudu Transaction Semantics</a> 
+      </li> 
+      <li>
+
+          <a href="background_tasks.html">Background Maintenance Tasks</a> 
+      </li> 
+      <li>
+
+          <a href="configuration_reference.html">Kudu Configuration Reference</a> 
+      </li> 
+      <li>
+
+          <a href="command_line_tools_reference.html">Kudu Command Line Tools Reference</a> 
+      </li> 
+      <li>
+
+          <a href="known_issues.html">Known Issues and Limitations</a> 
+      </li> 
+      <li>
+
+          <a href="contributing.html">Contributing to Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="export_control.html">Export Control Notice</a> 
+      </li> 
+  </ul>
+  </div>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation.  Last updated 2017-12-01 23:56:01 PST 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

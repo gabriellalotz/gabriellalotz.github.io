@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - New Range Partitioning Features in Kudu 0.10</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">New Range Partitioning Features in Kudu 0.10</h1>
+    <p class="meta">Posted 23 Aug 2016 by Dan Burkert</p>
+  </header>
+  <div class="entry-content">
+    <p>Kudu 0.10 is shipping with a few important new features for range partitioning.
+These features are designed to make Kudu easier to scale for certain workloads,
+like time series. This post will introduce these features, and discuss how to use
+them to effectively design tables for scalability and performance.</p>
+
+<!--more-->
+
+<p>Since Kudu’s initial release, tables have had the constraint that once created,
+the set of partitions is static. This forces users to plan ahead and create
+enough partitions for the expected size of the table, because once the table is
+created no further partitions can be added. When using hash partitioning,
+creating more partitions is as straightforward as specifying more buckets. For
+range partitioning, however, knowing where to put the extra partitions ahead of
+time can be difficult or impossible.</p>
+
+<p>The common solution to this problem in other distributed databases is to allow
+range partitions to split into smaller child range partitions. Unfortunately,
+range splitting typically has a large performance impact on running tables,
+since child partitions need to eventually be recompacted and rebalanced to a
+remote server. Range splitting is particularly thorny with Kudu, because rows
+are stored in tablets in primary key sorted order, which does not necessarily
+match the range partitioning order. If the range partition key is different than
+the primary key, then splitting requires inspecting and shuffling each
+individual row, instead of splitting the tablet in half.</p>
+
+<h2 id="adding-and-dropping-range-partitions">Adding and Dropping Range Partitions</h2>
+
+<p>As an alternative to range partition splitting, Kudu now allows range partitions
+to be added and dropped on the fly, without locking the table or otherwise
+affecting concurrent operations on other partitions. This solution is not
+strictly as powerful as full range partition splitting, but it strikes a good
+balance between flexibility, performance, and operational overhead.
+Additionally, this feature does not preclude range splitting in the future if
+there is a push to implement it. To support adding and dropping range
+partitions, Kudu had to remove an even more fundamental restriction when using
+range partitions.</p>
+
+<p>Previously, range partitions could only be created by specifying split points.
+Split points divide an implicit partition covering the entire range into
+contiguous and disjoint partitions. When using split points, the first and last
+partitions are always unbounded below and above, respectively. A consequence of
+the final partition being unbounded is that datasets which are range-partitioned
+on a column that increases in value over time will eventually have far more rows
+in the last partition than in any other. Unbalanced partitions are commonly
+referred to as hotspots, and until Kudu 0.10 they have been difficult to avoid
+when storing time series data in Kudu.</p>
+
+<p><img src="/img/2016-08-23-new-range-partitioning-features/range-partitioning-on-time.png" alt="png" class="img-responsive" /></p>
+
+<p>The figure above shows the tablets created by two different attempts to
+partition a table by range on a timestamp column. The first, above in blue, uses
+split points. The second, below in green, uses bounded range partitions
+specified during table creation. With bounded range partitions, there is no
+longer a guarantee that every possible row has a corresponding range partition.
+As a result, Kudu will now reject writes which fall in a ‘non-covered’ range.</p>
+
+<p>Now that tables are no longer required to have range partitions covering all
+possible rows, Kudu can support adding range partitions to cover the otherwise
+unoccupied space. Dropping a range partition will result in unoccupied space
+where the range partition was previously. In the example above, we may want to
+add a range partition covering 2017 at the end of the year, so that we can
+continue collecting data in the future. By lazily adding range partitions we
+avoid hotspotting, avoid the need to specify range partitions up front for time
+periods far in the future, and avoid the downsides of splitting. Additionally,
+historical data which is no longer useful can be efficiently deleted by dropping
+the entire range partition.</p>
+
+<h2 id="what-about-hash-partitioning">What About Hash Partitioning?</h2>
+
+<p>Since Kudu’s hash partitioning feature originally shipped in version 0.6, it has
+been possible to create tables which combine hash partitioning with range
+partitioning. The new range partitioning features continue to work seamlessly
+when combined with hash partitioning. Just as before, the number of tablets
+which comprise a table will be the product of the number of range partitions and
+the number of hash partition buckets. Adding or dropping a range partition will
+result in the creation or deletion of one tablet per hash bucket.</p>
+
+<p><img src="/img/2016-08-23-new-range-partitioning-features/range-and-hash-partitioning.png" alt="png" class="img-responsive" /></p>
+
+<p>The diagram above shows a time series table range-partitioned on the timestamp
+and hash-partitioned with two buckets. The hash partitioning could be on the
+timestamp column, or it could be on any other column or columns in the primary
+key. In this example only two years of historical data is needed, so at the end
+of 2016 a new range partition is added for 2017 and the historical 2014 range
+partition is dropped. This causes two new tablets to be created for 2017, and
+the two existing tablets for 2014 to be deleted.</p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>Beginning with the Kudu 0.10 release, users can add and drop range partitions
+through the Java and C++ client APIs. Range partitions on existing tables can be
+dropped and replacements added, but it requires the servers and all clients to
+be updated to 0.10.</p>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2025/11/10/introducing-the-rest-api.html">Introducing REST API for metadata management to Apache Kudu</a> </li>
+    
+      <li> <a href="/2025/07/10/apache-kudu-1-18-0-release.html">Apache Kudu 1.18.0 Released</a> </li>
+    
+      <li> <a href="/2025/05/13/introducing-the-externalized-kudu-connector.html">Introducing the Externalized Kudu Connector</a> </li>
+    
+      <li> <a href="/2024/11/13/apache-kudu-1-17-1-release.html">Apache Kudu 1.17.1 Released</a> </li>
+    
+      <li> <a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a> </li>
+    
+      <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
+    
+      <li> <a href="/2022/06/17/apache-kudu-1-16-0-released.html">Apache Kudu 1.16.0 Released</a> </li>
+    
+      <li> <a href="/2021/06/22/apache-kudu-1-15-0-released.html">Apache Kudu 1.15.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/28/apache-kudu-1-14-0-release.html">Apache Kudu 1.14.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

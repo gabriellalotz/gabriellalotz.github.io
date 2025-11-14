@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Introducing the Externalized Kudu Connector</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Introducing the Externalized Kudu Connector</h1>
+    <p class="meta">Posted 13 May 2025 by Ferenc Csaky</p>
+  </header>
+  <div class="entry-content">
+    <p>Note: This is a cross-post from the Apache Flink blog <a href="https://flink.apache.org/2025/04/30/introducing-the-externalized-kudu-connector/">Introducing the Externalized Kudu Connector</a></p>
+
+<p>We are pleased to announce the revival of a connector that makes it possible for Flink to interact with <a href="https://kudu.apache.org/">Apache Kudu</a>.
+The original connector existed as part of the <a href="https://bahir.apache.org/#home">Apache Bahir</a> project, which was moved into the attic.
+Despite this, we saw interest to keep the Kudu connector updated, hence the community agreed to externalize it as a standalone connector in accordance with the current connector development model.
+For more information about the externalization process, see <a href="https://cwiki.apache.org/confluence/display/FLINK/FLIP-439%3A+Externalize+Kudu+Connector+from+Bahir">FLIP-439</a>.</p>
+
+<!--more-->
+
+<h1 id="highlights">Highlights</h1>
+
+<ul>
+  <li>The connector is built on the already existing Apache Bahir code.</li>
+  <li>The existing DataStream connector is updated to Sink V2 API.</li>
+  <li>New DataStream Source API connector implementation.</li>
+  <li>The Table API source and sink connectors are now using the new Schema stack.</li>
+  <li>The first released connector version is <em>2.0.0</em>, and it supports <em>Flink 1.19</em>, and <em>1.20</em>.</li>
+</ul>
+
+<h1 id="datastream-source-api">DataStream Source API</h1>
+
+<p>The Source API implementation is a net new addition to the externalized connector, and it brings some interesting features.
+Although Kudu itself is a bounded source, the Kudu Source implementation supports to configure boundedness, and can run in <code class="language-plaintext highlighter-rouge">CONTINUOUS_UNBOUNDED</code> mode.
+In <code class="language-plaintext highlighter-rouge">CONTINUOUS_UNBOUNDED</code> mode, the source operates similarly to a Change Data Capture (CDC) system.
+When the job starts, it takes a snapshot of the source table and records the snapshot timestamp.
+After that, it performs periodic differential scans, capturing only the changes that occurred since the last scan.
+The frequency of these scans is determined by the <code class="language-plaintext highlighter-rouge">.setDiscoveryPeriod(Duration)</code> setting.
+The following example demonstrates how to stream data from a Kudu table, capturing updates every one minute.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">KuduSource</span><span class="o">&lt;</span><span class="nc">Row</span><span class="o">&gt;</span> <span class="n">source</span> <span class="o">=</span>
+        <span class="nc">KuduSource</span><span class="o">.&lt;</span><span class="nc">Row</span><span class="o">&gt;</span><span class="n">builder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">setTableInfo</span><span class="o">(...)</span>
+                <span class="o">.</span><span class="na">setReaderConfig</span><span class="o">(...)</span>
+                <span class="o">.</span><span class="na">setRowResultConverter</span><span class="o">(</span><span class="k">new</span> <span class="nc">RowResultRowConverter</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">setBoundedness</span><span class="o">(</span><span class="nc">Boundedness</span><span class="o">.</span><span class="na">CONTINUOUS_UNBOUNDED</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">setDiscoveryPeriod</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="na">ofMinutes</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>For more details and examples, see the <a href="https://nightlies.apache.org/flink/flink-docs-lts/docs/connectors/datastream/kudu/">DataStream connector documentation</a></p>
+
+<h1 id="table-api-catalog">Table API Catalog</h1>
+
+<p>The connector includes a catalog implementation designed to manage metadata for your Kudu setup and facilitate table operations.
+With the Kudu catalog, you can access all existing Kudu tables directly through Flink SQL queries.
+Such catalog can be defined in Flink SQL, as part of the Java application, or via a YAML catalog descriptor as well.
+The below example shows a minimal example in Filnk SQL.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">CATALOG</span> <span class="n">my_kudu_catalog</span> <span class="k">WITH</span><span class="p">(</span>
+    <span class="s1">'type'</span> <span class="o">=</span> <span class="s1">'kudu'</span><span class="p">,</span>
+    <span class="s1">'masters'</span> <span class="o">=</span> <span class="s1">'localhost:7051'</span><span class="p">,</span>
+    <span class="s1">'default-database'</span> <span class="o">=</span> <span class="s1">'default_database'</span>
+<span class="p">);</span>
+
+<span class="n">USE</span> <span class="k">CATALOG</span> <span class="n">my_kudu_catalog</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>For other Table API related topics and examples, see the <a href="https://nightlies.apache.org/flink/flink-docs-lts/docs/connectors/table/kudu/">Table API connector documentation</a></p>
+
+<h1 id="release-notes">Release Notes</h1>
+
+<h2 id="sub-task">Sub-task</h2>
+<ul>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-34929">FLINK-34929</a>] - Create “flink-connector-kudu” repository</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-34930">FLINK-34930</a>] - Move existing Kudu connector code from Bahir repo to dedicated repo</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-34931">FLINK-34931</a>] - Update Kudu DataStream connector to use Sink V2</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-35114">FLINK-35114</a>] - Remove old Table API implementations, update Schema stack</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-35350">FLINK-35350</a>] - Add documentation for Kudu connector</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37389">FLINK-37389</a>] - Add “flink-sql-connector-kudu” module</li>
+</ul>
+
+<h2 id="new-feature">New Feature</h2>
+<ul>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-36855">FLINK-36855</a>] - Implement Source API in Kudu connector</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37527">FLINK-37527</a>] - Add <code class="language-plaintext highlighter-rouge">KuduSource</code> documentation</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37664">FLINK-37664</a>] - Integrate Kudu connector docs</li>
+</ul>
+
+<h2 id="improvement">Improvement</h2>
+<ul>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-36839">FLINK-36839</a>] - Update Kudu version to 1.17.1</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37190">FLINK-37190</a>] - Make Kudu <code class="language-plaintext highlighter-rouge">FlushMode</code> configurable in Flink SQL</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37230">FLINK-37230</a>] - Consolidate Kudu connector table options</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37237">FLINK-37237</a>] - Improve Kudu table creation based on Flink SQL <code class="language-plaintext highlighter-rouge">CREATE TABLE</code></li>
+</ul>
+
+<h1 id="list-of-contributors">List of Contributors</h1>
+
+<p>Ferenc Csaky, Martijn Visser, Marton Greber</p>
+
+<h1 id="resources">Resources</h1>
+
+<p>Connector GitHub repository: <a href="https://github.com/apache/flink-connector-kudu">https://github.com/apache/flink-connector-kudu</a></p>
+
+<p>Maven Central link: <a href="https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu">https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu</a></p>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2025/11/10/introducing-the-rest-api.html">Introducing REST API for metadata management to Apache Kudu</a> </li>
+    
+      <li> <a href="/2025/07/10/apache-kudu-1-18-0-release.html">Apache Kudu 1.18.0 Released</a> </li>
+    
+      <li> <a href="/2025/05/13/introducing-the-externalized-kudu-connector.html">Introducing the Externalized Kudu Connector</a> </li>
+    
+      <li> <a href="/2024/11/13/apache-kudu-1-17-1-release.html">Apache Kudu 1.17.1 Released</a> </li>
+    
+      <li> <a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a> </li>
+    
+      <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
+    
+      <li> <a href="/2022/06/17/apache-kudu-1-16-0-released.html">Apache Kudu 1.16.0 Released</a> </li>
+    
+      <li> <a href="/2021/06/22/apache-kudu-1-15-0-released.html">Apache Kudu 1.15.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/28/apache-kudu-1-14-0-release.html">Apache Kudu 1.14.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

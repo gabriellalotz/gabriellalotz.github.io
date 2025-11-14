@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Introducing Auto-incrementing Column in Kudu</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Introducing Auto-incrementing Column in Kudu</h1>
+    <p class="meta">Posted 07 Mar 2024 by Abhishek Chennaka</p>
+  </header>
+  <div class="entry-content">
+    <!--more-->
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Kudu has a strict requirement for a primary key presence in a table. This is primarily to help in
+point lookups and support DELETE and UPDATE operations on the table data. There are situations where
+users are unable to define a unique primary key in their data set and have to either introduce
+additional columns to be a part of the primary key or define a new column and maintain it to enforce
+uniqueness. Kudu 1.17 has introduced support for the auto-incrementing column to have partially
+defined primary keys (keys which are not unique across the table) during table creation. This way a
+user does not have to worry about the uniqueness constraint when defining a primary key.</p>
+
+<h1 id="implementation-details">Implementation Details</h1>
+
+<p>When a primary key is partially defined, Kudu internally creates a new column named
+“auto_incrementing_id” as a part of the primary key. The column is populated with a monotonically
+increasing counter. The system updates the counter value upon every INSERT operation and populates
+the “auto_incrementing_id” column on the server side. The counter is partition-local i.e. every
+tablet has its own counter.</p>
+
+<h2 id="server-side">Server Side</h2>
+
+<p>When a user writes data into a table with the auto-incrementing column, the server makes sure that
+no INSERT operations have the “auto_incrementing_id” column field value set and populates this
+column value. The highest value of the counter written into the “auto_incrementing_id” column
+until any particular point is stored in memory and this is used to set the column value for the
+next INSERT operation.</p>
+
+<h2 id="client-side">Client Side</h2>
+
+<p>When creating a table without an explicitly defined primary key, users will have to declare the key
+as non-unique. Internally, the client builds a schema with an extra column named
+“auto_incrementing_id” and forwards the request to the server where the table is created. For
+INSERT operations, the user shouldn’t specify the “auto_incrementing_id” column value as it will be
+populated on the server side.</p>
+
+<h3 id="impala-integration">Impala Integration</h3>
+
+<p>In Impala, the new column is not exposed to the user by default. This is due to the reason that it
+is not a part of the user table schema. The below query will not return the “auto_incrementing_id”
+column
+SELECT * FROM &lt;tablename&gt;</p>
+
+<p>If the auto-incrementing column’s data is needed, the column name has to be specifically requested.
+The below query will return the column values:
+SELECT *, auto_incrementing_id FROM &lt;tablename&gt;</p>
+
+<h4 id="examples">Examples</h4>
+
+<p>Create a table with two columns and two hash partitions:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU;
+Query: CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU
++-------------------------+
+| summary                 |
++-------------------------+
+| Table has been created. |
++-------------------------+
+Fetched 1 row(s) in 3.94s
+</code></pre></div></div>
+
+<p>Describe the table:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; DESCRIBE demo_table;
+Query: DESCRIBE demo_table
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+| name                 | type   | comment | primary_key | key_unique | nullable | default_value | encoding      | compression         | block_size |
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+| id                   | int    |         | true        | false      | false    |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
+| auto_incrementing_id | bigint |         | true        | false      | false    |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
+| name                 | string |         | false       |            | true     |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+</code></pre></div></div>
+
+<p>Insert rows with duplicate partial primary key column values:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe');
+Query: INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe')
+..
+Modified 4 row(s), 0 row error(s) in 0.41s
+</code></pre></div></div>
+
+<p>Scan the table (notice the duplicate values in the ‘id’ column):</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; SELECT * FROM demo_table;
+Query: SELECT * FROM demo_table
+..
++----+------+
+| id | name |
++----+------+
+| 3  | Mary |
+| 1  | John |
+| 1  | Joe  |
+| 2  | Bob  |
++----+------+
+Fetched 4 row(s) in 0.24s
+</code></pre></div></div>
+
+<p>Explicitly specify the auto-incrementing column name to fetch the column values:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; SELECT *, auto_incrementing_id FROM demo_table;
+Query: SELECT *, auto_incrementing_id FROM demo_table
+..
++----+------+----------------------+
+| id | name | auto_incrementing_id |
++----+------+----------------------+
+| 3  | Mary | 1                    |
+| 1  | John | 1                    |
+| 1  | Joe  | 2                    |
+| 2  | Bob  | 2                    |
++----+------+----------------------+
+Fetched 4 row(s) in 0.24s
+</code></pre></div></div>
+
+<p>Update and Delete rows:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; UPDATE demo_table SET name='Matt' WHERE id=3;
+Query: UPDATE demo_table SET name='Matt' WHERE id=3
+Modified 1 row(s), 0 row error(s) in 1.99s
+default&gt; UPDATE demo_table SET name='Liam' WHERE id=1;
+Query: UPDATE demo_table SET name='Liam' WHERE id=1
+Modified 2 row(s), 0 row error(s) in 2.15s
+default&gt; DELETE FROM demo_table where id=2;
+Query: DELETE FROM demo_table where id=2;
+Modified 1 row(s), 0 row error(s) in 1.40s
+</code></pre></div></div>
+
+<p>Scan all the columns of the table:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; SELECT *, auto_incrementing_id FROM demo_table;
+Query: SELECT *, auto_incrementing_id FROM demo_table
+..
++----+------+----------------------+
+| id | name | auto_incrementing_id |
++----+------+----------------------+
+| 3  | Matt | 1                    |
+| 1  | Liam | 1                    |
+| 1  | Liam | 2                    |
++----+------+----------------------+
+Fetched 3 row(s) in 0.20s
+</code></pre></div></div>
+
+<h4 id="limitations">Limitations</h4>
+
+<p>Impala doesn’t support UPSERT operations on tables with the auto-incrementing column as of writing
+this article.</p>
+
+<h3 id="kudu-clients-java-c-python">Kudu clients (Java, C++, Python)</h3>
+
+<p>Unlike in Impala, scanning the table fetches all the table data including the auto incrementing column.
+There is no need to explicitly request the auto-incrementing column.</p>
+
+<p>There is also support for UPSERT operations but the user has to provide the entire primary key
+including the value for the auto-incrementing column. If the row is present, it will be considered a
+regular UPDATE operation. If the row is not present, it is considered an INSERT operation.</p>
+
+<h4 id="examples-1">Examples</h4>
+
+<p><a href="https://github.com/apache/kudu/blob/master/examples/cpp/non_unique_primary_key.cc">https://github.com/apache/kudu/blob/master/examples/cpp/non_unique_primary_key.cc</a></p>
+
+<p><a href="https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py">https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py</a></p>
+
+<h2 id="backup-and-restore">Backup and Restore</h2>
+
+<p>The Kudu backup tool from Kudu 1.17 and later supports backing up tables with the
+auto-incrementing column. The prior backup tools will fail with an error message -
+“auto_incrementing_id is a reserved column name” during backup and restore operations.</p>
+
+<p>The backed up data (from Kudu 1.17 and later) includes the auto-incrementing column in the table
+schema and the column values as well. Restoring this backed up table with the Kudu restore tool
+will create a table with the auto-incrementing column and the column values identical to the
+original source table.</p>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2025/11/10/introducing-the-rest-api.html">Introducing REST API for metadata management to Apache Kudu</a> </li>
+    
+      <li> <a href="/2025/07/10/apache-kudu-1-18-0-release.html">Apache Kudu 1.18.0 Released</a> </li>
+    
+      <li> <a href="/2025/05/13/introducing-the-externalized-kudu-connector.html">Introducing the Externalized Kudu Connector</a> </li>
+    
+      <li> <a href="/2024/11/13/apache-kudu-1-17-1-release.html">Apache Kudu 1.17.1 Released</a> </li>
+    
+      <li> <a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a> </li>
+    
+      <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
+    
+      <li> <a href="/2022/06/17/apache-kudu-1-16-0-released.html">Apache Kudu 1.16.0 Released</a> </li>
+    
+      <li> <a href="/2021/06/22/apache-kudu-1-15-0-released.html">Apache Kudu 1.15.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/28/apache-kudu-1-14-0-release.html">Apache Kudu 1.14.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

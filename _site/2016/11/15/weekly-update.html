@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Apache Kudu Weekly Update November 15th, 2016</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Apache Kudu Weekly Update November 15th, 2016</h1>
+    <p class="meta">Posted 15 Nov 2016 by David Alves</p>
+  </header>
+  <div class="entry-content">
+    <p>Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</p>
+
+<!--more-->
+
+<h2 id="project-news">Project news</h2>
+
+<ul>
+  <li>
+    <p>The first release candidate for Kudu 1.1.0 is <a href="http://mail-archives.apache.org/mod_mbox/kudu-dev/201611.mbox/%3CCADY20s7ZKZkPmUEcTexW%3D%2B_%2BLnDY2hABZg0-UZD3jvWAs9-pog%40mail.gmail.com%3E">now available</a>.</p>
+
+    <dl>
+      <dt>Noteworthy new features/improvements:</dt>
+      <dd>
+        <ul>
+          <li>The Python client has been brought to feature parity with the C++ and Java clients.</li>
+          <li>IN LIST predicates.</li>
+          <li>Java client now features client-side tracing.</li>
+          <li>Kudu now publishes jar files for Spark 2.0 compiled with Scala 2.11.</li>
+          <li>Kudu’s Raft implementation now features pre-elections. In our tests this has greatly improved stability.</li>
+        </ul>
+      </dd>
+    </dl>
+
+    <p>Community developers and users are encouraged to download the source
+tarball and vote on the release.</p>
+
+    <p>For more information on what’s new, check out the
+<a href="https://github.com/apache/kudu/blob/branch-1.1.x/docs/release_notes.adoc">release notes</a>.
+<em>Note:</em> some links from these in-progress release notes will not be live until the
+release itself is published.</p>
+  </li>
+  <li>
+    <p>On November 7th, the Kudu PMC announced that Jordan Birdsell, from State Farm, had been voted
+in as a new committer and PMC member.</p>
+
+    <p>Jordan’s contributions include extensive work on the python client, throwing it some much needed
+love, and bringing it to feature parity with the other clients.</p>
+
+    <p>Besides his extensive code contributions Jordan has also been active in reviewing other
+developer’s patches and helping the community in general, on slack and other channels.</p>
+
+    <p>Jordan has been doing great work and the Kudu PMC was pleased to recognize his contributions
+with committership.</p>
+  </li>
+  <li>
+    <p>Mike Percy will be presenting Kudu Wednesday 16th November at <a href="https://apachebigdataeu2016.sched.org/">Apache Big Data Europe, in Seville</a>.</p>
+  </li>
+  <li>
+    <p>Congratulations to Haijie Hong for his <a href="https://gerrit.cloudera.org/#/c/4822/">first contribution to Kudu!</a>.
+Haijie fixed some edge cases in BitWriter that were blocking RLE usage for 64 bit types.</p>
+  </li>
+  <li>
+    <p>Congratulations to Maxim Smyatkin for his <a href="https://gerrit.cloudera.org/#/q/Maxim">first contributions to Kudu!</a>.
+Maxim has contributed several patches helping with debug and cleanup.</p>
+  </li>
+</ul>
+
+<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
+
+<ul>
+  <li>
+    <p>A lot of progress has been done towards the goals that were set in the scope docs introduced in
+the last couple of posts. Specifically:</p>
+
+    <ul>
+      <li>
+        <p>Dan Burkert, Todd Lipcon and Alexey Serbin have doubled down on the security effort. They have
+been working on enabling Kerberos authentication and rpc encryption. The <a href="https://docs.google.com/document/d/1cPNDTpVkIUo676RlszpTF1gHZ8l0TdbB7zFBAuOuYUw/edit#heading=h.gsibhnd5dyem">security scope doc</a>
+has been updated with the latest plans for security and many patches have been merged already.</p>
+      </li>
+      <li>
+        <p>David Alves has continued the work on <a href="https://s.apache.org/7VCo">consistency</a>. Up for review
+and partially pushed is a patch series to address row history loss if a row is deleted and then
+re-inserted. Also in progress is work to make sure that scans at a snapshot from followers
+always return same data as if they were executed on the leader. This helps with Read-Your-Writes
+when reading from lagging replicas.</p>
+      </li>
+      <li>
+        <p>Adar Dembo has been making good progress <a href="https://s.apache.org/uOOt">addressing issues seen with the LogBlockManager</a>.
+A series of patches have been merged with various fixes to block managers in general and to the
+log block manager in particular.</p>
+      </li>
+      <li>
+        <p>Dinesh Bhat has been working on improving the manual recovery tools for Kudu. Namely, he has
+added a tool to force a remote replica copy to a destination server, and a tool to delete a
+local replica of a tablet. The latter is useful when a tablet cannot come up due to bad state.</p>
+      </li>
+      <li>
+        <p>Jean-Daniel Cryans has implemented RPC tracing for the java client, greatly improving
+debuggability. JD also has added ReplicaSelection to the java client, allowing to perform
+scans on replicas other than the leader, which should be of great help for load-balancing.</p>
+      </li>
+      <li>
+        <p>Besides the feature parity contributions, Jordan Birdsell has laid out a
+<a href="http://mail-archives.apache.org/mod_mbox/kudu-dev/201611.mbox/%3CCAGaaj_VKfB4mhu6eExHCWo0%3D6Qd0HFWy7bg9e39JgOaFPGJ1nQ%40mail.gmail.com%3E">roadmap for Python client work</a>
+for the 1.2 release. Feedback from other Python client users is certainly appreciated.</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>Want to learn more about a specific topic from this blog post? Shoot an email to the
+<a href="mailto:user@kudu.apache.org">kudu-user mailing list</a> or
+tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.</p>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2025/11/10/introducing-the-rest-api.html">Introducing REST API for metadata management to Apache Kudu</a> </li>
+    
+      <li> <a href="/2025/07/10/apache-kudu-1-18-0-release.html">Apache Kudu 1.18.0 Released</a> </li>
+    
+      <li> <a href="/2025/05/13/introducing-the-externalized-kudu-connector.html">Introducing the Externalized Kudu Connector</a> </li>
+    
+      <li> <a href="/2024/11/13/apache-kudu-1-17-1-release.html">Apache Kudu 1.17.1 Released</a> </li>
+    
+      <li> <a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a> </li>
+    
+      <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
+    
+      <li> <a href="/2022/06/17/apache-kudu-1-16-0-released.html">Apache Kudu 1.16.0 Released</a> </li>
+    
+      <li> <a href="/2021/06/22/apache-kudu-1-15-0-released.html">Apache Kudu 1.15.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/28/apache-kudu-1-14-0-release.html">Apache Kudu 1.14.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

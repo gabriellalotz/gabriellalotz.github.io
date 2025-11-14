@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Apache Kudu 1.12.0 Release Notes</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li class="active">
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li >
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-9">
+
+<h1>Apache Kudu 1.12.0 Release Notes</h1>
+      <div class="sect1">
+<h2 id="rn_1.12.0_upgrade_notes"><a class="link" href="#rn_1.12.0_upgrade_notes">Upgrade Notes</a></h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_obsoletions"><a class="link" href="#rn_1.12.0_obsoletions">Obsoletions</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The Flume sink has been migrated to the Apache Flume project and removed
+from Kudu. Users depending on the Flume integration can use the old
+<code>kudu-flume</code> jars or migrate to the Flume jars containing the Kudu sink.</p>
+</li>
+<li>
+<p>Support for Apache Sentry authorization has been deprecated and may be
+removed in the next minor release. Users depending on the Sentry integration
+should migrate to the Apache Ranger integration for fine-grained authorization.</p>
+</li>
+<li>
+<p>Support for Python 2 has been deprecated and may be removed in the next minor
+release.</p>
+</li>
+<li>
+<p>Support for CentOS/RHEL 6, Debian 8, Ubuntu 14 has been deprecated and may
+be removed in the next minor release.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_deprecations"><a class="link" href="#rn_1.12.0_deprecations">Deprecations</a></h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_new_features"><a class="link" href="#rn_1.12.0_new_features">New features</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu now supports native fine-grained authorization via integration with
+Apache Ranger. Kudu may now enforce access control policies defined for
+Kudu tables and columns stored in Ranger. See the
+<a href="security.html#fine_grained_authz">authorization documentation</a>
+for more details.</p>
+</li>
+<li>
+<p>Kudu’s web UI now supports proxying via Apache Knox. Kudu may be deployed
+in a firewalled state behind a Knox Gateway which will forward HTTP requests
+and responses between clients and the Kudu web UI.</p>
+</li>
+<li>
+<p>Kudu’s web UI now supports HTTP keep-alive. Operations that access multiple
+URLs will now reuse a single HTTP connection, improving their performance.</p>
+</li>
+<li>
+<p>The <code>kudu tserver quiesce</code> tool is added to quiesce tablet servers. While a
+tablet server is quiescing, it will stop hosting tablet leaders and stop
+serving new scan requests. This can be used to orchestrate a rolling restart
+without stopping on-going Kudu workloads.</p>
+</li>
+<li>
+<p>Introduced <code>auto</code> time source for HybridClock timestamps. With
+<code>--time_source=auto</code> in AWS and GCE cloud environments, Kudu masters and
+tablet servers use the built-in NTP client synchronized with dedicated NTP
+servers available via host-only networks. With <code>--time_source=auto</code> in
+environments other than AWS/GCE, Kudu masters and tablet servers rely on
+their local machine&#8217;s clock synchronized by NTP. The default setting for
+the HybridClock time source (<code>--time_source=system</code>) is backward-compatible,
+requiring the local machine&#8217;s clock to be synchronized by the kernel&#8217;s NTP
+discipline.</p>
+</li>
+<li>
+<p>The <code>kudu cluster rebalance</code> tool now supports moving replicas away from
+specific tablet servers by supplying the <code>--ignored_tservers</code> and
+<code>--move_replicas_from_ignored_tservers</code> arguments (see
+<a href="https://issues.apache.org/jira/browse/KUDU-2914">KUDU-2914</a> for more
+details).</p>
+</li>
+<li>
+<p>The <code>kudu table create</code> tool is added to allow users to specify table
+creation options using JSON.</p>
+</li>
+<li>
+<p>Kudu now supports DATE and VARCHAR data types. See the
+<a href="http://kudu.apache.org/docs/schema_design.html">schema design documentation</a>
+for more details.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_improvements"><a class="link" href="#rn_1.12.0_improvements">Optimizations and improvements</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Write Ahead Log file segments and index chunks are now managed by Kudu’s file
+cache. With that, all long-lived file descriptors used by Kudu are managed by
+the file cache, and there’s no longer a need for capacity planning of file
+descriptor usage.</p>
+</li>
+<li>
+<p>Kudu no longer requires the running of <code>kudu fs update_dirs</code> to change a
+directory configuration or recover from a disk failure
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2993">KUDU-2993</a>).</p>
+</li>
+<li>
+<p>Kudu tablet servers and masters now expose a tablet-level metric
+<code>num_raft_leaders</code> for the number of Raft leaders hosted on the server.</p>
+</li>
+<li>
+<p>Kudu&#8217;s maintenance operation scheduling has been updated to prioritize
+reducing WAL retention under memory pressure. Kudu would previously prioritize
+operations that yielded high-memory reduction, which could result in high WAL
+disk usage in workloads that contained updates
+(see <a href="https://issues.apache.org/jira/browse/KUDU-3002">KUDU-3002</a>).</p>
+</li>
+<li>
+<p>A new maintenance operation is introduced to remove rowsets that have had all
+of their rows deleted and whose newest delete operations are considered
+ancient (see <a href="https://issues.apache.org/jira/browse/KUDU-1625">KUDU-1625</a>).</p>
+</li>
+<li>
+<p>The built-in NTP client is now fully supported as the time source for Kudu&#8217;s
+HybridTime clock, i.e. it&#8217;s no longer marked as experimental. To switch the
+time source from the existing <code>system</code> time source (which is the default)
+to the built-in NTP client, use <code>--time_source=builtin</code>.</p>
+</li>
+<li>
+<p>Introduced additional metrics for the built-in NTP client
+(see <a href="https://issues.apache.org/jira/browse/KUDU-3048">KUDU-3048</a>).</p>
+</li>
+<li>
+<p>Updated <code>/config</code> page of masters' and tablet servers' web UI to display
+configured and effective time source. In addition, the effective list of
+reference servers for the built-in NTP client is shown there as well,
+if applicable.</p>
+</li>
+<li>
+<p><code>chronyd</code> (version 3.4 and newer) is now supported as NTP server for
+synchronizing the local machine&#8217;s clock in a Kudu cluster. It&#8217;s important to
+have the <code>rtcsync</code> option enabled in the configuration of the <code>chronyd</code> NTP
+daemon (see <a href="https://issues.apache.org/jira/browse/KUDU-2573">KUDU-2573</a>).</p>
+</li>
+<li>
+<p>Kudu now supports building and running on RHEL/CentOS 8. This has been tested
+with CentOS 8.1.</p>
+</li>
+<li>
+<p>The processing of Raft consensus vote requests has been improved to be more
+robust during high contention scenarios like election storms.</p>
+</li>
+<li>
+<p>Added a validator to enforce consistency between the maximum size of an RPC
+and the maximum size of tablet transaction memory, controlled by
+<code>--rpc_max_message_size</code> and <code>--tablet_transaction_memory</code> flags
+correspondingly.  In prior releases, if the limit on the size of RPC requests
+is increased and the limit on tablet transaction memory size is kept with the
+default setting, certain Raft transactions could be committed but not applied
+(see <a href="https://issues.apache.org/jira/browse/KUDU-3023">KUDU-3023</a>).</p>
+</li>
+<li>
+<p>The metrics endpoint now supports filtering metrics by a metric severity level.
+See the <a href="https://kudu.apache.org/docs/administration.html#_collecting_metrics_via_http">documentation</a>
+for more details.</p>
+</li>
+<li>
+<p>Many <code>kudu local_replica</code> tools are updated to not open the block manager,
+which significantly reduces the amount of IO done when running them (see
+<a href="https://issues.apache.org/jira/browse/KUDU-3070">KUDU-3070</a> for more
+details).</p>
+</li>
+<li>
+<p>The Kudu Java client now exposes a way to get the resource metrics associated
+with a given scanner (see
+<a href="https://issues.apache.org/jira/browse/KUDU-2162">KUDU-2162</a> for more
+details).</p>
+</li>
+<li>
+<p>Scan predicates are pushed down to RLE decoders, improving
+predicate-evaluation-efficiency in some workloads (see
+<a href="https://issues.apache.org/jira/browse/KUDU-2852">KUDU-2852</a> for more
+details).</p>
+</li>
+<li>
+<p>The log block manager will now attempt to use multiple threads to open blocks
+in each data directory, in some tests reducing startup time by up to 20% (see
+<a href="https://issues.apache.org/jira/browse/KUDU-2977">KUDU-2977</a> and
+<a href="https://issues.apache.org/jira/browse/KUDU-3001">KUDU-3001</a> for more
+details).</p>
+</li>
+<li>
+<p>Kudu&#8217;s tablet server web UI scans page is updated to show the number of round
+trips per scanner.</p>
+</li>
+<li>
+<p>Kudu&#8217;s master and tablet server web UIs are updated to show critical
+partition information, including tablet count and on-disk size.</p>
+</li>
+<li>
+<p>Kudu servers now expose the <code>last_read_elapsed_seconds</code> and
+<code>last_write_elapsed_seconds</code> tablet-level metrics that indicate how long ago
+the most recent read and write operations to a given tablet were.</p>
+</li>
+<li>
+<p>Kudu servers now expose the <code>transaction_memory_limit_rejections</code>
+tablet-level metric that tracks the number of transactions rejected because a
+given tablet&#8217;s transactional memory limit was reached (see
+<a href="https://issues.apache.org/jira/browse/KUDU-3021">KUDU-3021</a> for more
+details).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_fixed_issues"><a class="link" href="#rn_1.12.0_fixed_issues">Fixed Issues</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Fixed a bug in which Kudu would not schedule compactions if a server were
+under memory pressure
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2929">KUDU-2929</a>).</p>
+</li>
+<li>
+<p>Fixed a bug where DDL operations like ALTER TABLE on tables with huge
+number of partitions might result in a DoS situation for Kudu masters
+(see <a href="https://issues.apache.org/jira/browse/KUDU-3036">KUDU-3036</a>).</p>
+</li>
+<li>
+<p>Fixed a bug where Kudu Java client cannot negotiate a secure connection
+with Kudu masters and tablet servers if using BouncyCastle JCE provider
+(see <a href="https://issues.apache.org/jira/browse/KUDU-3106">KUDU-3106</a>).</p>
+</li>
+<li>
+<p>Kudu masters will now crash immediately upon hitting a disk failure (see
+<a href="https://issues.apache.org/jira/browse/KUDU-2904">KUDU-2904</a> for more details).</p>
+</li>
+<li>
+<p>Fixed an issue in the Kudu master in which delays in receiving tablet server
+heartbeats could result in an excess amount of RPC traffic between the
+masters and tablet servers (see
+<a href="https://issues.apache.org/jira/browse/KUDU-2992">KUDU-2992</a> for more
+details).</p>
+</li>
+<li>
+<p>Fixed an issue with Kudu&#8217;s location placement policy that would place all
+replicas in one location when two locations were available (see
+<a href="https://issues.apache.org/jira/browse/KUDU-3008">KUDU-3008</a> for more
+details).</p>
+</li>
+<li>
+<p>The Java client will now correctly propagate timestamps when sending write
+batches (see <a href="https://issues.apache.org/jira/browse/KUDU-3035">KUDU-3035</a>
+for more detail).</p>
+</li>
+<li>
+<p>Fixed an issue with the Kudu backup Spark jobs in which Kudu would return
+with a non-zero exit if the job succeeded but backed up no rows (see
+<a href="https://issues.apache.org/jira/browse/KUDU-3099">KUDU-3099</a> for more
+details).</p>
+</li>
+<li>
+<p>The <code>raft_term</code> and <code>time_since_last_leader_heartbeat</code> aggregated table
+metrics will now return the maximum metric reported instead of the sum.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_wire_compatibility"><a class="link" href="#rn_1.12.0_wire_compatibility">Wire Protocol compatibility</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu 1.12.0 is wire-compatible with previous versions of Kudu:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu 1.12 clients may connect to servers running Kudu 1.0 or later. If the client uses
+features that are not available on the target server, an error will be returned.</p>
+</li>
+<li>
+<p>Rolling upgrade between Kudu 1.11 and Kudu 1.12 servers is believed to be possible
+though has not been sufficiently tested. Users are encouraged to shut down all nodes
+in the cluster, upgrade the software, and then restart the daemons on the new version.</p>
+</li>
+<li>
+<p>Kudu 1.0 clients may connect to servers running Kudu 1.12 with the exception of the
+below-mentioned restrictions regarding secure clusters.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The authentication features introduced in Kudu 1.3 place the following limitations
+on wire compatibility between Kudu 1.12 and versions earlier than 1.3:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If a Kudu 1.12 cluster is configured with authentication or encryption set to "required",
+clients older than Kudu 1.3 will be unable to connect.</p>
+</li>
+<li>
+<p>If a Kudu 1.12 cluster is configured with authentication and encryption set to "optional"
+or "disabled", older clients will still be able to connect.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_incompatible_changes"><a class="link" href="#rn_1.12.0_incompatible_changes">Incompatible Changes in Kudu 1.12.0</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="rn_1.12.0_client_compatibility"><a class="link" href="#rn_1.12.0_client_compatibility">Client Library Compatibility</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The Kudu 1.12 Java client library is API- and ABI-compatible with Kudu 1.11. Applications
+written against Kudu 1.11 will compile and run against the Kudu 1.12 client library and
+vice-versa.</p>
+</li>
+<li>
+<p>The Kudu 1.12 C++ client is API- and ABI-forward-compatible with Kudu 1.11.
+Applications written and compiled against the Kudu 1.11 client library will run without
+modification against the Kudu 1.12 client library. Applications written and compiled
+against the Kudu 1.12 client library will run without modification against the Kudu 1.11
+client library.</p>
+</li>
+<li>
+<p>The Kudu 1.12 Python client is API-compatible with Kudu 1.11. Applications
+written against Kudu 1.11 will continue to run against the Kudu 1.12 client
+and vice-versa.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_known_issues"><a class="link" href="#rn_1.12.0_known_issues">Known Issues and Limitations</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Please refer to the <a href="known_issues.html">Known Issues and Limitations</a> section of the
+documentation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.12.0_contributors"><a class="link" href="#rn_1.12.0_contributors">Contributors</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu 1.12 includes contributions from 33 people, including 8 first-time
+contributors:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Andy Singer</p>
+</li>
+<li>
+<p>Michele Milesi</p>
+</li>
+<li>
+<p>Ning Wang</p>
+</li>
+<li>
+<p>Renhai Zhao</p>
+</li>
+<li>
+<p>Sheng Liu</p>
+</li>
+<li>
+<p>Thomas D&#8217;Silva</p>
+</li>
+<li>
+<p>Tianhua Huang</p>
+</li>
+<li>
+<p>Waleed Fateem</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Thank you for your help in making Kudu even better!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="resources_and_next_steps"><a class="link" href="#resources_and_next_steps">Resources</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://kudu.apache.org">Kudu Website</a></p>
+</li>
+<li>
+<p><a href="http://github.com/apache/kudu">Kudu GitHub Repository</a></p>
+</li>
+<li>
+<p><a href="index.html">Kudu Documentation</a></p>
+</li>
+<li>
+<p><a href="prior_release_notes.html">Release notes for older releases</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installation_options"><a class="link" href="#_installation_options">Installation Options</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For full installation details, see <a href="installation.html">Kudu Installation</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_next_steps"><a class="link" href="#_next_steps">Next Steps</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="quickstart.html">Kudu Quickstart</a></p>
+</li>
+<li>
+<p><a href="installation.html">Installing Kudu</a></p>
+</li>
+<li>
+<p><a href="configuration.html">Configuring Kudu</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+    </div>
+    <div class="col-md-3">
+
+  <div id="toc" data-spy="affix" data-offset-top="70">
+  <ul>
+
+      <li>
+
+          <a href="index.html">Introducing Kudu</a> 
+      </li> 
+      <li>
+<span class="active-toc">Kudu Release Notes</span>
+            <ul class="sectlevel1">
+<li><a href="#rn_1.12.0_upgrade_notes">Upgrade Notes</a></li>
+<li><a href="#rn_1.12.0_obsoletions">Obsoletions</a></li>
+<li><a href="#rn_1.12.0_deprecations">Deprecations</a></li>
+<li><a href="#rn_1.12.0_new_features">New features</a></li>
+<li><a href="#rn_1.12.0_improvements">Optimizations and improvements</a></li>
+<li><a href="#rn_1.12.0_fixed_issues">Fixed Issues</a></li>
+<li><a href="#rn_1.12.0_wire_compatibility">Wire Protocol compatibility</a></li>
+<li><a href="#rn_1.12.0_incompatible_changes">Incompatible Changes in Kudu 1.12.0</a>
+<ul class="sectlevel2">
+<li><a href="#rn_1.12.0_client_compatibility">Client Library Compatibility</a></li>
+</ul>
+</li>
+<li><a href="#rn_1.12.0_known_issues">Known Issues and Limitations</a></li>
+<li><a href="#rn_1.12.0_contributors">Contributors</a></li>
+<li><a href="#resources_and_next_steps">Resources</a></li>
+<li><a href="#_installation_options">Installation Options</a></li>
+<li><a href="#_next_steps">Next Steps</a></li>
+</ul> 
+      </li> 
+      <li>
+
+          <a href="quickstart.html">Quickstart Guide</a> 
+      </li> 
+      <li>
+
+          <a href="installation.html">Installation Guide</a> 
+      </li> 
+      <li>
+
+          <a href="configuration.html">Configuring Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="hive_metastore.html">Using the Hive Metastore with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="kudu_impala_integration.html">Using Impala with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="administration.html">Administering Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="troubleshooting.html">Troubleshooting Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="developing.html">Developing Applications with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="schema_design.html">Kudu Schema Design</a> 
+      </li> 
+      <li>
+
+          <a href="scaling_guide.html">Kudu Scaling Guide</a> 
+      </li> 
+      <li>
+
+          <a href="security.html">Kudu Security</a> 
+      </li> 
+      <li>
+
+          <a href="transaction_semantics.html">Kudu Transaction Semantics</a> 
+      </li> 
+      <li>
+
+          <a href="background_tasks.html">Background Maintenance Tasks</a> 
+      </li> 
+      <li>
+
+          <a href="configuration_reference.html">Kudu Configuration Reference</a> 
+      </li> 
+      <li>
+
+          <a href="command_line_tools_reference.html">Kudu Command Line Tools Reference</a> 
+      </li> 
+      <li>
+
+          <a href="known_issues.html">Known Issues and Limitations</a> 
+      </li> 
+      <li>
+
+          <a href="contributing.html">Contributing to Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="export_control.html">Export Control Notice</a> 
+      </li> 
+  </ul>
+  </div>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation.  Last updated 2020-05-18 13:53:35 PDT 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

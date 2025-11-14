@@ -1,0 +1,905 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-11-14T10:07:48+00:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Introducing REST API for metadata management to Apache Kudu</title><link href="http://localhost:4000/2025/11/10/introducing-the-rest-api.html" rel="alternate" type="text/html" title="Introducing REST API for metadata management to Apache Kudu" /><published>2025-11-10T00:00:00+00:00</published><updated>2025-11-10T00:00:00+00:00</updated><id>http://localhost:4000/2025/11/10/introducing-the-rest-api</id><content type="html" xml:base="http://localhost:4000/2025/11/10/introducing-the-rest-api.html">&lt;p&gt;Apache Kudu has long provided client APIs in C++, Java, and Python for building client applications. Today, we’re excited to announce the introduction of a REST API for metadata management that makes Kudu even more accessible to developers and integration tools.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;
+
+&lt;p&gt;The Apache Kudu REST API exposes table-metadata and administrative operations over HTTP on top of Kudu’s catalog. It lets users handle these tasks with lightweight REST calls instead of building a full client application.&lt;/p&gt;
+
+&lt;h2 id=&quot;key-features&quot;&gt;Key Features&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Table Metadata Management&lt;/strong&gt;: Create, read, update, and delete tables through HTTP endpoints&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;JSON-based&lt;/strong&gt;: All requests and responses use JSON format for easy parsing&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;RESTful Design&lt;/strong&gt;: Follows standard HTTP methods and status codes&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Kerberos/SPNEGO Authentication&lt;/strong&gt;: Integrates with Kudu’s existing authentication mechanisms&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;api-overview&quot;&gt;API Overview&lt;/h2&gt;
+
+&lt;p&gt;The REST API is available on the master’s webserver at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/&lt;/code&gt; and provides endpoints for table metadata management. The API supports standard HTTP methods (GET, POST, PUT, DELETE) and returns JSON responses.&lt;/p&gt;
+
+&lt;h3 id=&quot;available-endpoints&quot;&gt;Available Endpoints&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables&lt;/code&gt; - List all tables&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;POST&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables&lt;/code&gt; - Create a new table&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables/&amp;lt;table_id&amp;gt;&lt;/code&gt; - Get table details&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;PUT&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables/&amp;lt;table_id&amp;gt;&lt;/code&gt; - Update table metadata&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;DELETE&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables/&amp;lt;table_id&amp;gt;&lt;/code&gt; - Delete a table&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/leader&lt;/code&gt; - Discover the current leader master&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;example-request&quot;&gt;Example Request&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables/&amp;lt;table_id&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl http://master-host:8765/api/v1/tables/a2810622a25b4a3e8ce0be3ece103c50
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Response:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;example_table&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;a2810622a25b4a3e8ce0be3ece103c50&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;schema&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;columns&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;column_name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;INT8&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;is_key&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;is_nullable&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;encoding&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;AUTO_ENCODING&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;compression&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;DEFAULT_COMPRESSION&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;cfile_block_size&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;immutable&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;partition_schema&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;hash_schema&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;columns&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;num_buckets&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;seed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;range_schema&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;columns&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;owner&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;default&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;comment&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;extra_config&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For complete API documentation, the OpenAPI specification is available in the &lt;a href=&quot;https://github.com/apache/kudu/blob/master/www/swagger/kudu-api.json&quot;&gt;Kudu repository&lt;/a&gt;. On a Kudu cluster running this feature, the interactive API documentation is accessible through the master’s web UI:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/swagger.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;limitations&quot;&gt;Limitations&lt;/h2&gt;
+
+&lt;h3 id=&quot;multi-master-setup&quot;&gt;Multi-Master Setup&lt;/h3&gt;
+&lt;p&gt;In multi-master configurations, only the leader master will respond to REST API requests. Follower masters will return errors, so applications should use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/leader&lt;/code&gt; endpoint to get the leader address and connect to the correct master.&lt;/p&gt;
+
+&lt;h3 id=&quot;metadata-only&quot;&gt;Metadata Only&lt;/h3&gt;
+&lt;p&gt;This REST API focuses exclusively on table metadata management. Data read/write operations are not supported through this interface and should continue to use Kudu’s native client APIs for optimal performance.&lt;/p&gt;
+
+&lt;h2 id=&quot;configuration&quot;&gt;Configuration&lt;/h2&gt;
+
+&lt;p&gt;The REST API must be explicitly enabled using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--enable_rest_api&lt;/code&gt; flag on Kudu masters. The master’s webserver must also be enabled (via the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--webserver_enabled&lt;/code&gt; flag) since the REST API is served through the webserver.&lt;/p&gt;</content><author><name>Gabriella Lotz</name></author><summary type="html">Apache Kudu has long provided client APIs in C++, Java, and Python for building client applications. Today, we’re excited to announce the introduction of a REST API for metadata management that makes Kudu even more accessible to developers and integration tools.</summary></entry><entry><title type="html">Apache Kudu 1.18.0 Released</title><link href="http://localhost:4000/2025/07/10/apache-kudu-1-18-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.0 Released" /><published>2025-07-10T00:00:00+00:00</published><updated>2025-07-10T00:00:00+00:00</updated><id>http://localhost:4000/2025/07/10/apache-kudu-1-18-0-release</id><content type="html" xml:base="http://localhost:4000/2025/07/10/apache-kudu-1-18-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Segmented LRU Block Cache (Experimental):&lt;/strong&gt;
+Helps protect hot data from eviction during large scans.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Embedded RocksDB for Metadata (Experimental):&lt;/strong&gt;
+A new option to store metadata in embedded RocksDB for better scalability.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Auto-Incrementing Columns Enhancements:&lt;/strong&gt;
+These columns are now correctly restored on backup/restore and initialized on bootstrap.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Improved Metrics &amp;amp; Observability:&lt;/strong&gt;
+Added metrics for timeouts, tablet scans, RPC backlogs, and more as well as Prometheus
+support for tablet-level metrics.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Build and Platform Updates:&lt;/strong&gt;
+Kudu now supports &lt;strong&gt;AArch64 Ubuntu/RedHat&lt;/strong&gt;, &lt;strong&gt;Ubuntu24.04&lt;/strong&gt; and builds on &lt;strong&gt;macOS Sonoma (Xcode 15)&lt;/strong&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Java &amp;amp; Python Client Improvements:&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Python: simplified installation, UPSERT IGNORE, soft-deletes, immutable columns&lt;/li&gt;
+      &lt;li&gt;Java: configurable buffer size, better schema update handling&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Security Enhancements:&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Improvements in JWT authentication&lt;/li&gt;
+      &lt;li&gt;Dedicated SPNEGO keytab for embedded webserver&lt;/li&gt;
+      &lt;li&gt;HTTP headers for enhanced security of the embedded webserver&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Kudu CLI &amp;amp; Tooling Improvements:&lt;/strong&gt;
+Better error messages and handling in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu table copy&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;scan&lt;/code&gt;, and others.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.18.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.18.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.18.0&quot;&gt;1.18.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.18.0/docs/installation.html#build_from_source&quot;&gt;1.18.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.18.0&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.18.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Introducing the Externalized Kudu Connector</title><link href="http://localhost:4000/2025/05/13/introducing-the-externalized-kudu-connector.html" rel="alternate" type="text/html" title="Introducing the Externalized Kudu Connector" /><published>2025-05-13T00:00:00+00:00</published><updated>2025-05-13T00:00:00+00:00</updated><id>http://localhost:4000/2025/05/13/introducing-the-externalized-kudu-connector</id><content type="html" xml:base="http://localhost:4000/2025/05/13/introducing-the-externalized-kudu-connector.html">&lt;p&gt;Note: This is a cross-post from the Apache Flink blog &lt;a href=&quot;https://flink.apache.org/2025/04/30/introducing-the-externalized-kudu-connector/&quot;&gt;Introducing the Externalized Kudu Connector&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We are pleased to announce the revival of a connector that makes it possible for Flink to interact with &lt;a href=&quot;https://kudu.apache.org/&quot;&gt;Apache Kudu&lt;/a&gt;.
+The original connector existed as part of the &lt;a href=&quot;https://bahir.apache.org/#home&quot;&gt;Apache Bahir&lt;/a&gt; project, which was moved into the attic.
+Despite this, we saw interest to keep the Kudu connector updated, hence the community agreed to externalize it as a standalone connector in accordance with the current connector development model.
+For more information about the externalization process, see &lt;a href=&quot;https://cwiki.apache.org/confluence/display/FLINK/FLIP-439%3A+Externalize+Kudu+Connector+from+Bahir&quot;&gt;FLIP-439&lt;/a&gt;.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;highlights&quot;&gt;Highlights&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The connector is built on the already existing Apache Bahir code.&lt;/li&gt;
+  &lt;li&gt;The existing DataStream connector is updated to Sink V2 API.&lt;/li&gt;
+  &lt;li&gt;New DataStream Source API connector implementation.&lt;/li&gt;
+  &lt;li&gt;The Table API source and sink connectors are now using the new Schema stack.&lt;/li&gt;
+  &lt;li&gt;The first released connector version is &lt;em&gt;2.0.0&lt;/em&gt;, and it supports &lt;em&gt;Flink 1.19&lt;/em&gt;, and &lt;em&gt;1.20&lt;/em&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;datastream-source-api&quot;&gt;DataStream Source API&lt;/h1&gt;
+
+&lt;p&gt;The Source API implementation is a net new addition to the externalized connector, and it brings some interesting features.
+Although Kudu itself is a bounded source, the Kudu Source implementation supports to configure boundedness, and can run in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CONTINUOUS_UNBOUNDED&lt;/code&gt; mode.
+In &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CONTINUOUS_UNBOUNDED&lt;/code&gt; mode, the source operates similarly to a Change Data Capture (CDC) system.
+When the job starts, it takes a snapshot of the source table and records the snapshot timestamp.
+After that, it performs periodic differential scans, capturing only the changes that occurred since the last scan.
+The frequency of these scans is determined by the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.setDiscoveryPeriod(Duration)&lt;/code&gt; setting.
+The following example demonstrates how to stream data from a Kudu table, capturing updates every one minute.&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;KuduSource&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Row&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;source&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;KuduSource&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Row&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setTableInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(...)&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setReaderConfig&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(...)&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setRowResultConverter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RowResultRowConverter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setBoundedness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Boundedness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;CONTINUOUS_UNBOUNDED&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setDiscoveryPeriod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ofMinutes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For more details and examples, see the &lt;a href=&quot;https://nightlies.apache.org/flink/flink-docs-lts/docs/connectors/datastream/kudu/&quot;&gt;DataStream connector documentation&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;table-api-catalog&quot;&gt;Table API Catalog&lt;/h1&gt;
+
+&lt;p&gt;The connector includes a catalog implementation designed to manage metadata for your Kudu setup and facilitate table operations.
+With the Kudu catalog, you can access all existing Kudu tables directly through Flink SQL queries.
+Such catalog can be defined in Flink SQL, as part of the Java application, or via a YAML catalog descriptor as well.
+The below example shows a minimal example in Filnk SQL.&lt;/p&gt;
+
+&lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CATALOG&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_kudu_catalog&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WITH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;'type'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'kudu'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;'masters'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'localhost:7051'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;'default-database'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'default_database'&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;USE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CATALOG&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_kudu_catalog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For other Table API related topics and examples, see the &lt;a href=&quot;https://nightlies.apache.org/flink/flink-docs-lts/docs/connectors/table/kudu/&quot;&gt;Table API connector documentation&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;release-notes&quot;&gt;Release Notes&lt;/h1&gt;
+
+&lt;h2 id=&quot;sub-task&quot;&gt;Sub-task&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-34929&quot;&gt;FLINK-34929&lt;/a&gt;] - Create “flink-connector-kudu” repository&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-34930&quot;&gt;FLINK-34930&lt;/a&gt;] - Move existing Kudu connector code from Bahir repo to dedicated repo&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-34931&quot;&gt;FLINK-34931&lt;/a&gt;] - Update Kudu DataStream connector to use Sink V2&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-35114&quot;&gt;FLINK-35114&lt;/a&gt;] - Remove old Table API implementations, update Schema stack&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-35350&quot;&gt;FLINK-35350&lt;/a&gt;] - Add documentation for Kudu connector&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-37389&quot;&gt;FLINK-37389&lt;/a&gt;] - Add “flink-sql-connector-kudu” module&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;new-feature&quot;&gt;New Feature&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-36855&quot;&gt;FLINK-36855&lt;/a&gt;] - Implement Source API in Kudu connector&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-37527&quot;&gt;FLINK-37527&lt;/a&gt;] - Add &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;KuduSource&lt;/code&gt; documentation&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-37664&quot;&gt;FLINK-37664&lt;/a&gt;] - Integrate Kudu connector docs&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;improvement&quot;&gt;Improvement&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-36839&quot;&gt;FLINK-36839&lt;/a&gt;] - Update Kudu version to 1.17.1&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-37190&quot;&gt;FLINK-37190&lt;/a&gt;] - Make Kudu &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FlushMode&lt;/code&gt; configurable in Flink SQL&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-37230&quot;&gt;FLINK-37230&lt;/a&gt;] - Consolidate Kudu connector table options&lt;/li&gt;
+  &lt;li&gt;[&lt;a href=&quot;https://issues.apache.org/jira/browse/FLINK-37237&quot;&gt;FLINK-37237&lt;/a&gt;] - Improve Kudu table creation based on Flink SQL &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CREATE TABLE&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;list-of-contributors&quot;&gt;List of Contributors&lt;/h1&gt;
+
+&lt;p&gt;Ferenc Csaky, Martijn Visser, Marton Greber&lt;/p&gt;
+
+&lt;h1 id=&quot;resources&quot;&gt;Resources&lt;/h1&gt;
+
+&lt;p&gt;Connector GitHub repository: &lt;a href=&quot;https://github.com/apache/flink-connector-kudu&quot;&gt;https://github.com/apache/flink-connector-kudu&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Maven Central link: &lt;a href=&quot;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&quot;&gt;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&lt;/a&gt;&lt;/p&gt;</content><author><name>Ferenc Csaky</name></author><summary type="html">Note: This is a cross-post from the Apache Flink blog Introducing the Externalized Kudu Connector We are pleased to announce the revival of a connector that makes it possible for Flink to interact with Apache Kudu. The original connector existed as part of the Apache Bahir project, which was moved into the attic. Despite this, we saw interest to keep the Kudu connector updated, hence the community agreed to externalize it as a standalone connector in accordance with the current connector development model. For more information about the externalization process, see FLIP-439.</summary></entry><entry><title type="html">Apache Kudu 1.17.1 Released</title><link href="http://localhost:4000/2024/11/13/apache-kudu-1-17-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.1 Released" /><published>2024-11-13T00:00:00+00:00</published><updated>2024-11-13T00:00:00+00:00</updated><id>http://localhost:4000/2024/11/13/apache-kudu-1-17-1-release</id><content type="html" xml:base="http://localhost:4000/2024/11/13/apache-kudu-1-17-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.1!&lt;/p&gt;
+
+&lt;p&gt;This maintenance release fixes critical bugs and build issues discovered in Apache
+Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as
+possible.&lt;/p&gt;
+
+&lt;p&gt;The changes include the following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Upgraded several thirdparty components either to address CVEs or fix build
+issues discovered with contemporary releases.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Fixed file descriptor leak in encryption-at-rest
+(see &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3520&quot;&gt;KUDU-3520&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Fixed bug in range-aware tablet replica placement causing Kudu master to crash
+(see &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3532&quot;&gt;KUDU-3532&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a few of the fixes, for a more complete list of  improvements and
+fixes please refer to the &lt;a href=&quot;/releases/1.17.1/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.17.1, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.17.1&quot;&gt;1.17.1 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.17.1/docs/installation.html#build_from_source&quot;&gt;1.17.1 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.17.1&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.1! This maintenance release fixes critical bugs and build issues discovered in Apache Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as possible. The changes include the following:</summary></entry><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="http://localhost:4000/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00+00:00</published><updated>2024-03-07T00:00:00+00:00</updated><id>http://localhost:4000/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="http://localhost:4000/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
+
+&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;Kudu has a strict requirement for a primary key presence in a table. This is primarily to help in
+point lookups and support DELETE and UPDATE operations on the table data. There are situations where
+users are unable to define a unique primary key in their data set and have to either introduce
+additional columns to be a part of the primary key or define a new column and maintain it to enforce
+uniqueness. Kudu 1.17 has introduced support for the auto-incrementing column to have partially
+defined primary keys (keys which are not unique across the table) during table creation. This way a
+user does not have to worry about the uniqueness constraint when defining a primary key.&lt;/p&gt;
+
+&lt;h1 id=&quot;implementation-details&quot;&gt;Implementation Details&lt;/h1&gt;
+
+&lt;p&gt;When a primary key is partially defined, Kudu internally creates a new column named
+“auto_incrementing_id” as a part of the primary key. The column is populated with a monotonically
+increasing counter. The system updates the counter value upon every INSERT operation and populates
+the “auto_incrementing_id” column on the server side. The counter is partition-local i.e. every
+tablet has its own counter.&lt;/p&gt;
+
+&lt;h2 id=&quot;server-side&quot;&gt;Server Side&lt;/h2&gt;
+
+&lt;p&gt;When a user writes data into a table with the auto-incrementing column, the server makes sure that
+no INSERT operations have the “auto_incrementing_id” column field value set and populates this
+column value. The highest value of the counter written into the “auto_incrementing_id” column
+until any particular point is stored in memory and this is used to set the column value for the
+next INSERT operation.&lt;/p&gt;
+
+&lt;h2 id=&quot;client-side&quot;&gt;Client Side&lt;/h2&gt;
+
+&lt;p&gt;When creating a table without an explicitly defined primary key, users will have to declare the key
+as non-unique. Internally, the client builds a schema with an extra column named
+“auto_incrementing_id” and forwards the request to the server where the table is created. For
+INSERT operations, the user shouldn’t specify the “auto_incrementing_id” column value as it will be
+populated on the server side.&lt;/p&gt;
+
+&lt;h3 id=&quot;impala-integration&quot;&gt;Impala Integration&lt;/h3&gt;
+
+&lt;p&gt;In Impala, the new column is not exposed to the user by default. This is due to the reason that it
+is not a part of the user table schema. The below query will not return the “auto_incrementing_id”
+column
+SELECT * FROM &amp;lt;tablename&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;If the auto-incrementing column’s data is needed, the column name has to be specifically requested.
+The below query will return the column values:
+SELECT *, auto_incrementing_id FROM &amp;lt;tablename&amp;gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;examples&quot;&gt;Examples&lt;/h4&gt;
+
+&lt;p&gt;Create a table with two columns and two hash partitions:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU;
+Query: CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU
++-------------------------+
+| summary                 |
++-------------------------+
+| Table has been created. |
++-------------------------+
+Fetched 1 row(s) in 3.94s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Describe the table:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; DESCRIBE demo_table;
+Query: DESCRIBE demo_table
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+| name                 | type   | comment | primary_key | key_unique | nullable | default_value | encoding      | compression         | block_size |
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+| id                   | int    |         | true        | false      | false    |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
+| auto_incrementing_id | bigint |         | true        | false      | false    |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
+| name                 | string |         | false       |            | true     |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Insert rows with duplicate partial primary key column values:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe');
+Query: INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe')
+..
+Modified 4 row(s), 0 row error(s) in 0.41s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Scan the table (notice the duplicate values in the ‘id’ column):&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; SELECT * FROM demo_table;
+Query: SELECT * FROM demo_table
+..
++----+------+
+| id | name |
++----+------+
+| 3  | Mary |
+| 1  | John |
+| 1  | Joe  |
+| 2  | Bob  |
++----+------+
+Fetched 4 row(s) in 0.24s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Explicitly specify the auto-incrementing column name to fetch the column values:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; SELECT *, auto_incrementing_id FROM demo_table;
+Query: SELECT *, auto_incrementing_id FROM demo_table
+..
++----+------+----------------------+
+| id | name | auto_incrementing_id |
++----+------+----------------------+
+| 3  | Mary | 1                    |
+| 1  | John | 1                    |
+| 1  | Joe  | 2                    |
+| 2  | Bob  | 2                    |
++----+------+----------------------+
+Fetched 4 row(s) in 0.24s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Update and Delete rows:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; UPDATE demo_table SET name='Matt' WHERE id=3;
+Query: UPDATE demo_table SET name='Matt' WHERE id=3
+Modified 1 row(s), 0 row error(s) in 1.99s
+default&amp;gt; UPDATE demo_table SET name='Liam' WHERE id=1;
+Query: UPDATE demo_table SET name='Liam' WHERE id=1
+Modified 2 row(s), 0 row error(s) in 2.15s
+default&amp;gt; DELETE FROM demo_table where id=2;
+Query: DELETE FROM demo_table where id=2;
+Modified 1 row(s), 0 row error(s) in 1.40s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Scan all the columns of the table:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; SELECT *, auto_incrementing_id FROM demo_table;
+Query: SELECT *, auto_incrementing_id FROM demo_table
+..
++----+------+----------------------+
+| id | name | auto_incrementing_id |
++----+------+----------------------+
+| 3  | Matt | 1                    |
+| 1  | Liam | 1                    |
+| 1  | Liam | 2                    |
++----+------+----------------------+
+Fetched 3 row(s) in 0.20s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;limitations&quot;&gt;Limitations&lt;/h4&gt;
+
+&lt;p&gt;Impala doesn’t support UPSERT operations on tables with the auto-incrementing column as of writing
+this article.&lt;/p&gt;
+
+&lt;h3 id=&quot;kudu-clients-java-c-python&quot;&gt;Kudu clients (Java, C++, Python)&lt;/h3&gt;
+
+&lt;p&gt;Unlike in Impala, scanning the table fetches all the table data including the auto incrementing column.
+There is no need to explicitly request the auto-incrementing column.&lt;/p&gt;
+
+&lt;p&gt;There is also support for UPSERT operations but the user has to provide the entire primary key
+including the value for the auto-incrementing column. If the row is present, it will be considered a
+regular UPDATE operation. If the row is not present, it is considered an INSERT operation.&lt;/p&gt;
+
+&lt;h4 id=&quot;examples-1&quot;&gt;Examples&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/apache/kudu/blob/master/examples/cpp/non_unique_primary_key.cc&quot;&gt;https://github.com/apache/kudu/blob/master/examples/cpp/non_unique_primary_key.cc&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py&quot;&gt;https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;backup-and-restore&quot;&gt;Backup and Restore&lt;/h2&gt;
+
+&lt;p&gt;The Kudu backup tool from Kudu 1.17 and later supports backing up tables with the
+auto-incrementing column. The prior backup tools will fail with an error message -
+“auto_incrementing_id is a reserved column name” during backup and restore operations.&lt;/p&gt;
+
+&lt;p&gt;The backed up data (from Kudu 1.17 and later) includes the auto-incrementing column in the table
+schema and the column values as well. Restoring this backed up table with the Kudu restore tool
+will create a table with the auto-incrementing column and the column values identical to the
+original source table.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html"></summary></entry><entry><title type="html">Apache Kudu 1.17.0 Released</title><link href="http://localhost:4000/2023/09/07/apache-kudu-1-17-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.0 Released" /><published>2023-09-07T00:00:00+00:00</published><updated>2023-09-07T00:00:00+00:00</updated><id>http://localhost:4000/2023/09/07/apache-kudu-1-17-0-released</id><content type="html" xml:base="http://localhost:4000/2023/09/07/apache-kudu-1-17-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the
+following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu now supports encrypting data at rest. Kudu supports &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AES-128-CTR&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AES-192-CTR&lt;/code&gt;, and
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AES-256-CTR&lt;/code&gt; ciphers to encrypt data, supports Apache Ranger KMS and Apache Hadoop KMS. See
+&lt;a href=&quot;https://kudu.apache.org/docs/security.html#_data_at_rest&quot;&gt;Data at rest&lt;/a&gt; for more details.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu now supports range-specific hash schemas for tables. It’s now possible to add ranges with
+their own unique hash schema independent of the table-wide hash schema. This can be done at table
+creation time and while altering the table. It’s controlled by the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--enable_per_range_hash_schemas&lt;/code&gt;
+master flag which is enabled by default (see
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2671&quot;&gt;KUDU-2671&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu now supports soft-deleted tables. Kudu keeps a soft-deleted table aside for a period of time
+(a.k.a. reservation), not purging the data yet.  The table can be restored/recalled back before its
+reservation expires.  The reservation period can be customized via Kudu client API upon
+soft-deleting the table.  The default reservation period is controlled by the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--default_deleted_table_reserve_seconds&lt;/code&gt; master’s flag.
+NOTE: As of Kudu 1.17 release, the soft-delete functionality is not supported when HMS integration
+is enabled, but this should be addressed in a future release (see
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3326&quot;&gt;KUDU-3326&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Introduced &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Auto-Incrementing&lt;/code&gt; column. An auto-incrementing column is populated on the server side
+with a monotonically increasing counter. The counter is local to every tablet, i.e. each tablet has
+a separate auto incrementing counter (see
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1945&quot;&gt;KUDU-1945&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu now supports experimental non-unique primary key. When a table with non-unique primary key is
+created, an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Auto-Incrementing&lt;/code&gt; column named &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;auto_incrementing_id&lt;/code&gt; is added automatically to the
+table as the key column. The non-unique key columns and the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Auto-Incrementing&lt;/code&gt; column together form
+the effective primary key (see &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1945&quot;&gt;KUDU-1945&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Introduced &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Immutable&lt;/code&gt; column. It’s useful to represent a semantically constant entity (see
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3353&quot;&gt;KUDU-3353&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;An experimental feature is added to Kudu that allows it to automatically rebalance tablet leader
+replicas among tablet servers. The background task can be enabled by setting the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--auto_leader_rebalancing_enabled&lt;/code&gt; flag on the Kudu masters. By default, the flag is set to ‘false’
+(see &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3390&quot;&gt;KUDU-3390&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Introduced an experimental feature: authentication of Kudu client applications to Kudu servers
+using JSON Web Tokens (JWT).  The JWT-based authentication can be used as an alternative to Kerberos
+authentication for Kudu applications running at edge nodes where configuring Kerberos might be
+cumbersome.  Similar to Kerberos credentials, a JWT is considered a primary client’s credentials.
+The server-side capability of JWT-based authentication is controlled by the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--enable_jwt_token_auth&lt;/code&gt; flag (set ‘false’ by default).  When the flat set to ‘true’, a Kudu server
+is capable of authenticating Kudu clients using the JWT provided by the client during RPC connection
+negotiation.  From its side, a Kudu client authenticates a Kudu server by verifying its TLS
+certificate.  For the latter to succeed, the client should use Kudu client API to add the cluster’s
+IPKI CA certificate into the list of trusted certificates.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The C++ client scan token builder can now create multiple tokens per tablet. So, it’s now possible
+to dynamically scale the set of readers/scanners fetching data from a Kudu table in parallel. To use
+this functionality, use the newly introduced &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SetSplitSizeBytes()&lt;/code&gt; method of the Kudu client API to
+specify how many bytes of data each token should scan
+(see &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3393&quot;&gt;KUDU-3393&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu’s default replica placement algorithm is now range and table aware to prevent hotspotting
+unlike the old power of two choices algorithm. New replicas from the same range are spread evenly
+across available tablet servers, the table the range belongs to is used as a tiebreaker (see
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3476&quot;&gt;KUDU-3476&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Reduce the memory consumption if there are frequent alter schema operations for tablet servers
+(see &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3197&quot;&gt;KUDU-3197&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Reduce the memory consumption by implementing memory budgeting for performing RowSet merge
+compactions (i.e. CompactRowSetsOp maintenance operations). Several flags have been introduced,
+while the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--rowset_compaction_memory_estimate_enabled&lt;/code&gt; flag indicates whether to check for
+available memory necessary to run CompactRowSetsOp maintenance operations (see
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3406&quot;&gt;KUDU-3406&lt;/a&gt;).&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.17.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.17.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.17.0&quot;&gt;1.17.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.17.0/docs/installation.html#build_from_source&quot;&gt;1.17.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, and other Java integrations are published to the ASF Maven
+repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.17.0&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Yingchun Lai</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.16.0 Released</title><link href="http://localhost:4000/2022/06/17/apache-kudu-1-16-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.16.0 Released" /><published>2022-06-17T00:00:00+00:00</published><updated>2022-06-17T00:00:00+00:00</updated><id>http://localhost:4000/2022/06/17/apache-kudu-1-16-0-released</id><content type="html" xml:base="http://localhost:4000/2022/06/17/apache-kudu-1-16-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.16.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the
+following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu has a new &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/startup&lt;/code&gt; page on the web UI where admins can easily track
+startup progress of a Kudu server.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;It is now possible to change the replication of an existing table, and to
+require a minimum replication factor across a Kudu cluster.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.16.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.16.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.16.0&quot;&gt;1.16.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.16.0/docs/installation.html#build_from_source&quot;&gt;1.16.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.16.0&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.16.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.15.0 Released</title><link href="http://localhost:4000/2021/06/22/apache-kudu-1-15-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.15.0 Released" /><published>2021-06-22T00:00:00+00:00</published><updated>2021-06-22T00:00:00+00:00</updated><id>http://localhost:4000/2021/06/22/apache-kudu-1-15-0-released</id><content type="html" xml:base="http://localhost:4000/2021/06/22/apache-kudu-1-15-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.15.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the
+following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu now experimentally supports multi-row transactions. Currently only &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT&lt;/code&gt; and
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT_IGNORE&lt;/code&gt; operations are supported.
+See &lt;a href=&quot;https://github.com/apache/kudu/blob/master/docs/design-docs/transactions.adoc&quot;&gt;here&lt;/a&gt; for a
+design overview of this feature.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu now supports Raft configuration change for Kudu masters and CLI tools for orchestrating
+addition and removal of masters in a Kudu cluster. These tools substantially simplify the process
+of migrating to multiple masters, recovering a dead master and removing masters from a Kudu
+cluster. For detailed steps, see the latest administration documentation. This feature is evolving
+and the steps to add, remove and recover masters may change in the future.
+See &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2181&quot;&gt;KUDU-2181&lt;/a&gt; for details.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu now supports table comments directly on Kudu tables which are automatically synchronized
+when the Hive Metastore integration is enabled. These comments can be added at table creation time
+and changed via table alteration.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu now experimentally supports per-table size limits based on leader disk space usage or number
+of rows. When generating new authorization tokens, Masters will now consider the size limits and
+strip tokens of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE&lt;/code&gt; privileges if either limit is reached. To enable this
+feature, set the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--enable_table_write_limit&lt;/code&gt; master flag; adjust the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--table_disk_size_limit&lt;/code&gt;
+and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--table_row_count_limit&lt;/code&gt; flags as desired or use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu table set_limit&lt;/code&gt; tool to set
+limits per table.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;It is now possible to change the Kerberos Service Principal Name using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--principal&lt;/code&gt; flag. The
+default SPN is still &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu/_HOST&lt;/code&gt;. Clients connecting to a cluster using a non-default SPN must
+set the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sasl_protocol_name&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;saslProtocolName&lt;/code&gt; to match the SPN base
+(i.e. “kudu” if the SPN is “kudu/_HOST”) in the client builder or the Kudu CLI.
+See &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1884&quot;&gt;KUDU-1884&lt;/a&gt; for details.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu RPC now supports TLSv1.3.  Kudu servers and clients automatically negotiate TLSv1.3 for Kudu
+RPC if OpenSSL (or Java runtime correspondingly) on each side supports TLSv1.3.
+If necessary, use the newly introduced flag &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--rpc_tls_ciphersuites&lt;/code&gt; to customize TLSv1.3-specific
+cipher suites at the server side.
+See &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2871&quot;&gt;KUDU-2871&lt;/a&gt; for details.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.15.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.15.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.15.0&quot;&gt;1.15.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.15.0/docs/installation.html#build_from_source&quot;&gt;1.15.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.15.0&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
+architectures (ARM).&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.15.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.14.0 Released</title><link href="http://localhost:4000/2021/01/28/apache-kudu-1-14-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.14.0 Released" /><published>2021-01-28T00:00:00+00:00</published><updated>2021-01-28T00:00:00+00:00</updated><id>http://localhost:4000/2021/01/28/apache-kudu-1-14-0-release</id><content type="html" xml:base="http://localhost:4000/2021/01/28/apache-kudu-1-14-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.14.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the
+following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Full support for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT_IGNORE&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE_IGNORE&lt;/code&gt;, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DELETE_IGNORE&lt;/code&gt; operations
+was added. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT_IGNORE&lt;/code&gt; operation will insert a row if one matching the key
+does not exist and ignore the operation if one already exists. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE_IGNORE&lt;/code&gt;
+operation will update the row if one matching the key exists and ignore the operation
+if one does not exist. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DELETE_IGNORE&lt;/code&gt; operation will delete the row if one matching
+the key exists and ignore the operation if one does not exist. These operations are
+particularly useful in situations where retries or duplicate operations could occur and
+you do not want to handle the errors that could result manually or you do not want to cause
+unnecessary writes and compaction work as a result of using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPSERT&lt;/code&gt; operation.
+The Java client can check if the cluster it is communicating with supports these operations
+by calling the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;supportsIgnoreOperations()&lt;/code&gt; method on the KuduClient.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Spark 3 compatible JARs compiled for Scala 2.12 are now published for the Kudu Spark integration.
+See &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3202&quot;&gt;KUDU-3202&lt;/a&gt; for more details.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Every Kudu cluster now has an automatically generated cluster Id that can be used to uniquely
+identify a cluster. The cluster Id is shown in the masters web-UI, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu master list&lt;/code&gt; tool,
+and in master server logs.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Downloading the WAL data and data blocks when copying tablets to another tablet server is now
+parallelized, resulting in much faster tablet copy operations. These operations occur when
+recovering from a down tablet server or when running the cluster rebalancer.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The HMS integration now supports multiple Kudu clusters associated with a single HMS
+including Kudu clusters that do not have HMS synchronization enabled. This is possible,
+because the Kudu master will now leverage the cluster Id to ignore notifications from
+tables in a different cluster. Additionally, the HMS plugin will check if the Kudu cluster
+associated with a table has HMS synchronization enabled.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;DeltaMemStores will now be flushed as long as any DMS in a tablet is older than the point
+defined by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--flush_threshold_secs&lt;/code&gt;, rather than flushing once every &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--flush_threshold_secs&lt;/code&gt;
+period. This can reduce memory pressure under update- or delete-heavy workloads, and lower tablet
+server restart times following such workloads.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.14.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.14.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.14.0&quot;&gt;1.14.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.14.0/docs/installation.html#build_from_source&quot;&gt;1.14.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.14.0&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
+architectures (ARM).&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.14.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu</title><link href="http://localhost:4000/2021/01/15/bloom-filter-predicate.html" rel="alternate" type="text/html" title="Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu" /><published>2021-01-15T00:00:00+00:00</published><updated>2021-01-15T00:00:00+00:00</updated><id>http://localhost:4000/2021/01/15/bloom-filter-predicate</id><content type="html" xml:base="http://localhost:4000/2021/01/15/bloom-filter-predicate.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+&lt;a href=&quot;https://blog.cloudera.com/optimized-joins-filtering-with-bloom-filter-predicate-in-kudu/&quot;&gt;Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0&lt;/p&gt;
+
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;In database systems one of the most effective ways to improve performance is to avoid doing
+unnecessary work, such as network transfers and reading data from disk. One of the ways Apache
+Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate
+filters to Kudu allows for optimized execution by skipping reading column values for filtered out
+rows and reducing network IO between a client, like the distributed query engine Apache Impala, and
+Kudu. See the documentation on
+&lt;a href=&quot;https://docs.cloudera.com/runtime/latest/impala-reference/topics/impala-runtime-filtering.html&quot;&gt;runtime filtering in Impala&lt;/a&gt;
+for details.&lt;/p&gt;
+
+&lt;p&gt;CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in
+Kudu and the associated integration in Impala.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;bloom-filter&quot;&gt;Bloom filter&lt;/h2&gt;
+&lt;p&gt;A Bloom filter is a space-efficient probabilistic data structure used to test set membership with a
+possibility of false positive matches. In database systems these are used to determine whether a
+set of data can be ignored when only a subset of the records are required. See the
+&lt;a href=&quot;https://en.wikipedia.org/wiki/Bloom_filter&quot;&gt;wikipedia page&lt;/a&gt; for more details.&lt;/p&gt;
+
+&lt;p&gt;The implementation used in Kudu is a space, hash, and cache efficient block-based Bloom filter from
+&lt;a href=&quot;https://www.cs.amherst.edu/~ccmcgeoch/cs34/papers/cacheefficientbloomfilters-jea.pdf&quot;&gt;“Cache-, Hash- and Space-Efficient Bloom Filters”&lt;/a&gt;
+by Putze et al. This Bloom filter was taken from the implementation in Impala and further enhanced.
+The block based Bloom filter is designed to fit in CPU cache, and it allows SIMD operations using
+AVX2, when available, for efficient lookup and insertion.&lt;/p&gt;
+
+&lt;p&gt;Consider the case of a broadcast hash join between a small table and a big table where predicate
+push down is not available. This typically involves following steps:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Read the entire small table and construct a hash table from it.&lt;/li&gt;
+  &lt;li&gt;Broadcast the generated hash table to all worker nodes.&lt;/li&gt;
+  &lt;li&gt;On the worker nodes start fetching and iterating on slices of the big table,  check whether the
+key in the big table exists in the hash table, and only return the matched rows.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Step 3 is the heaviest since it involves reading the entire big table, and could involve heavy
+network IO if the worker and the nodes hosting the big table are not on the same server.&lt;/p&gt;
+
+&lt;p&gt;Before 7.1.5, Impala supported pushing down only the Minimum/Maximum (MIN_MAX) runtime filter to
+Kudu which filters out values not within the specified bounds. In addition to the MIN_MAX runtime
+filter, Impala in CDP 7.1.5+ now supports pushing down a runtime Bloom filter to Kudu. With the
+newly introduced Bloom filter predicate support in Kudu, Impala can use this feature to perform
+drastically more efficient joins for data stored in Kudu.
+Performance
+As in the scenario described above, we ran a Impala query which joins a big table stored on Kudu
+and a small table stored as Parquet on HDFS. The small table was created using Parquet on HDFS to
+isolate the new feature, but could also be stored in Kudu just the same. We ran the queries first
+using only the MIN_MAX filter and then using both the MIN_MAX and BLOOM filter
+(ALL runtime filters). For comparison, we created the same big table in Parquet on HDFS. Using
+Parquet on HDFS is a great baseline for comparison because Impala already supports both MIN_MAX and
+BLOOM filters for Parquet on HDFS.&lt;/p&gt;
+
+&lt;h2 id=&quot;setup&quot;&gt;Setup&lt;/h2&gt;
+&lt;p&gt;The following test was performed on a 6 node cluster with CDP Runtime 7.1.5.&lt;/p&gt;
+
+&lt;p&gt;Hardware Configuration:
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Dell PowerEdge R430, 20c/40t Xeon e5-2630 v4 @ 2.2Ghz, 128GB RAM, 4-2TB HDDs with 1 for WAL and 3
+for data directories.&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;schema&quot;&gt;Schema:&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Big table consists of 260 million rows with randomly generated data hash partitioned by primary
+key across 20 partitions on Kudu. The Kudu table was explicitly rebalanced to ensure a balanced
+layout after the load.&lt;/li&gt;
+  &lt;li&gt;Small table consists of 2000 rows of top 1000 and bottom 1000 keys from the big table stored as
+Parquet on HDFS. This prevents the MIN_MAX filters from doing any filtering on the big table as
+all rows would fall under the range bounds of the MIN_MAX filters.&lt;/li&gt;
+  &lt;li&gt;COMPUTE STATS were run on all tables to help gather information about the table metadata and help
+Impala optimize the query plan.&lt;/li&gt;
+  &lt;li&gt;All queries were run 10 times and the mean query runtime is depicted below.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;join-queries&quot;&gt;Join Queries&lt;/h2&gt;
+&lt;p&gt;For join queries, we saw performance improvements of 3X to 5X in Kudu with Bloom filter predicate
+pushdown. We expect to see even better performance multiples with larger data sizes and more
+selective queries.&lt;/p&gt;
+
+&lt;p&gt;Compared to Parquet on HDFS, Kudu performance is now better by around 17-33%.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/bloom-filter-join-queries.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;update-query&quot;&gt;Update Query&lt;/h2&gt;
+&lt;p&gt;For an update query that basically upserts the entire small table into the existing big table, we
+saw 15X improvement. This is primarily due to the increased query performance when selecting the
+rows to update.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/bloom-filter-update-query.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;See references section below for details on the table schema, loading process, and queries that were
+run.&lt;/p&gt;
+
+&lt;h2 id=&quot;tpc-h&quot;&gt;TPC-H&lt;/h2&gt;
+&lt;p&gt;We also ran the TPC-H benchmark on a single node cluster with a scale factor of 30 and saw
+performance improvements in the range of 19% to 31% with different block cache capacity settings.&lt;/p&gt;
+
+&lt;p&gt;Kudu automatically disables Bloom filter predicates that are not effectively filtering data to avoid
+any performance penalties from the new feature. During development of the feature, query 9 in the
+TPCH benchmark (TPCH-Q9) exhibited regression of 50-96%. On further investigation, the time required
+to scan the rows from Kudu increased by up to 2X. When investigating this regression we found that
+the Bloom filter predicate that was pushed down was filtering out less than 10% of the rows, leading
+to increased CPU usage in Kudu which outweighed the benefit of the filter. To resolve the regression
+we added a heuristic in Kudu wherein if a Bloom filter predicate is not filtering out a sufficient
+percentage of rows then it’s disabled automatically for the remainder of the scan. This is safe
+because Bloom filters can return false positives and hence false matches returned to the client are
+expected to be filtered out using other deterministic filters.&lt;/p&gt;
+
+&lt;h2 id=&quot;feature-availability&quot;&gt;Feature Availability&lt;/h2&gt;
+&lt;p&gt;Users querying Kudu using Impala will have the feature enabled by default from CDP 7.1.5 onward
+and CDP Public Cloud. We highly recommend users upgrade to get this performance enhancement and many
+other performance enhancements in the release. For custom applications that use the Kudu client API
+directly, the Kudu C++ client also has the Bloom filter predicate available from CDP 7.1.5 onward.
+The Kudu Java client does not have the Bloom filter predicate available yet,
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3221&quot;&gt;KUDU-3221&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References:&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Performance testing related schema and queries:
+&lt;a href=&quot;https://gist.github.com/bbhavsar/006df9c40b4b0528e297fac29824ceb4&quot;&gt;https://gist.github.com/bbhavsar/006df9c40b4b0528e297fac29824ceb4&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Kudu C++ client documentation:
+&lt;a href=&quot;https://kudu.apache.org/cpp-client-api/classkudu_1_1client_1_1KuduTable.html#a356e8d0d10491d4d8540adefac86be94&quot;&gt;https://kudu.apache.org/cpp-client-api/classkudu_1_1client_1_1KuduTable.html#a356e8d0d10491d4d8540adefac86be94&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Example code to create and pass Bloom filter predicate:
+&lt;a href=&quot;https://github.com/apache/kudu/blob/master/src/kudu/client/predicate-test.cc#L1416&quot;&gt;https://github.com/apache/kudu/blob/master/src/kudu/client/predicate-test.cc#L1416&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Block based Bloom filter:
+&lt;a href=&quot;https://github.com/apache/kudu/blob/master/src/kudu/util/block_bloom_filter.h#L51&quot;&gt;https://github.com/apache/kudu/blob/master/src/kudu/util/block_bloom_filter.h#L51&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;acknowledgement&quot;&gt;Acknowledgement&lt;/h2&gt;
+&lt;p&gt;This feature was implemented jointly by Bankim Bhavsar and Wenzhe Zhou with guidance and feedback
+from Tim Armstrong, Adar Dembo, Thomas Tauber-Marshall, Andrew Wong, and Grant Henke. We are also
+grateful for our customers especially Mauricio Aristizabal from Impact for providing us valuable
+feedback and benchmarks.&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0 Introduction In database systems one of the most effective ways to improve performance is to avoid doing unnecessary work, such as network transfers and reading data from disk. One of the ways Apache Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate filters to Kudu allows for optimized execution by skipping reading column values for filtered out rows and reducing network IO between a client, like the distributed query engine Apache Impala, and Kudu. See the documentation on runtime filtering in Impala for details. CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in Kudu and the associated integration in Impala.</summary></entry></feed>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Community</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li >
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown active">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+
+<div class="row-fluid">
+  <div class="col-lg-12 community">
+
+<h3 id="apache-kudu-mailing-lists-and-chat-rooms">Apache Kudu Mailing Lists and Chat Rooms</h3>
+
+<p>Get help using Kudu or contribute to the project on our mailing lists or our chat room:</p>
+
+<ul>
+  <li><strong><a href="https://lists.apache.org/list.html?user@kudu.apache.org">user@kudu.apache.org</a></strong>
+(<a href="mailto:user-subscribe@kudu.apache.org">subscribe</a>)
+(<a href="mailto:user-unsubscribe@kudu.apache.org">unsubscribe</a>)
+for usage questions, help, and announcements.</li>
+  <li><strong><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Kudu Slack channel</a></strong> -
+where many Kudu developers and users hang out to answer questions and chat.</li>
+</ul>
+
+<p><strong>Developer mailing lists</strong></p>
+
+<ul>
+  <li><strong><a href="https://lists.apache.org/list.html?dev@kudu.apache.org">dev@kudu.apache.org</a></strong>
+(<a href="mailto:dev-subscribe@kudu.apache.org">subscribe</a>)
+(<a href="mailto:dev-unsubscribe@kudu.apache.org">unsubscribe</a>)
+for people who want to contribute code to Kudu.</li>
+  <li><strong><a href="https://lists.apache.org/list.html?builds@kudu.apache.org">builds@kudu.apache.org</a></strong>
+(<a href="mailto:builds-subscribe@kudu.apache.org">subscribe</a>)
+(<a href="mailto:builds-unsubscribe@kudu.apache.org">unsubscribe</a>)
+for discussions and notifications surrounding build infrastructure.</li>
+  <li><strong><a href="https://lists.apache.org/list.html?issues@kudu.apache.org">issues@kudu.apache.org</a></strong>
+(<a href="mailto:issues-subscribe@kudu.apache.org">subscribe</a>)
+(<a href="mailto:issues-unsubscribe@kudu.apache.org">unsubscribe</a>)
+receives an email notification for all ticket updates made in the <a href="https://issues.apache.org/jira/browse/KUDU">Kudu JIRA issue tracker</a>.</li>
+  <li><strong><a href="https://lists.apache.org/list.html?reviews@kudu.apache.org">reviews@kudu.apache.org</a></strong>
+(<a href="mailto:reviews-subscribe@kudu.apache.org">subscribe</a>)
+(<a href="mailto:reviews-unsubscribe@kudu.apache.org">unsubscribe</a>)
+receives an email notification for all code review requests and responses on the
+<a href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Kudu Gerrit</a>.</li>
+  <li><strong><a href="https://lists.apache.org/list.html?commits@kudu.apache.org">commits@kudu.apache.org</a></strong>
+(<a href="mailto:commits-subscribe@kudu.apache.org">subscribe</a>)
+(<a href="mailto:commits-unsubscribe@kudu.apache.org">unsubscribe</a>)
+receives an email notification of all code changes to the
+<a href="https://github.com/apache/kudu/">Kudu Git repository</a>.</li>
+</ul>
+
+<p><strong>Other developer resources</strong></p>
+
+<ul>
+  <li><strong><a class="icon github" href="https://github.com/apache/kudu">GitHub</a></strong></li>
+  <li><strong><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></strong></li>
+  <li><strong><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></strong></li>
+</ul>
+
+<p><strong>Social Media</strong></p>
+<ul>
+  <li><strong><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></strong></li>
+  <li><strong><a href="https://www.reddit.com/r/kudu/">Reddit</a></strong></li>
+</ul>
+
+<p><strong>Project information</strong></p>
+
+<ul>
+  <li><a href="/committers.html"><strong>Apache Kudu Committers list</strong></a></li>
+  <li><a href="/ecosystem.html"><strong>Apache Kudu Ecosystem</strong></a></li>
+  <li><a href="https://www.apache.org/security/"><strong>Security</strong></a></li>
+  <li><a href="https://www.apache.org/foundation/sponsorship.html"><strong>Sponsorship</strong></a></li>
+  <li><a href="https://www.apache.org/foundation/thanks.html"><strong>Thanks</strong></a></li>
+  <li><a href="https://www.apache.org/licenses/"><strong>License</strong></a></li>
+</ul>
+
+<h3 id="contributions">Contributions</h3>
+
+<p>There are lots of ways to get involved with the Kudu project. Some of them are
+listed below. You don’t have to be a developer; there are lots of valuable and
+important ways to get involved that suit any skill set and level.</p>
+
+<p>If you want to do something not listed here, or you see a gap that needs to be
+filled, <a href="mailto:dev@kudu.apache.org">let us know</a>.</p>
+
+<h4 id="participate-in-the-community">Participate in the community.</h4>
+
+<p>Community is the core of any open source project, and Kudu is no exception.
+Participate in the mailing lists, requests for comment, chat sessions, and bug
+reports.</p>
+
+<h4 id="talk-about-how-you-use-kudu">Talk about how you use Kudu.</h4>
+
+<p>Let us know what you think of Kudu and how you are using it. Send links to
+blogs or presentations you’ve given to the <a href="mailto:user@kudu.apache.org">kudu user mailing
+list</a> so that we can feature them.</p>
+
+<h4 id="file-bugs-and-enhancement-requests">File bugs and enhancement requests.</h4>
+
+<p>If you see problems in Kudu or if a missing feature would make Kudu more useful
+to you, let us know by filing a bug or request for enhancement on the <a href="https://issues.apache.org/jira/browse/KUDU">Kudu
+JIRA issue tracker</a>. The more
+information you can provide about how to reproduce an issue or how you’d like a
+new feature to work, the better.</p>
+
+<h4 id="write-code-and-submit-patches">Write code and submit patches.</h4>
+
+<p>You can submit patches to the core Kudu project or extend your existing
+codebase and APIs to work with Kudu. The Kudu project uses
+<a href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit</a> for code
+reviews. Please read the details of <a href="docs/contributing.html#_contributing_patches_using_gerrit">how to submit
+patches</a> and what
+the project <a href="docs/contributing.html#_code_style">coding guidelines</a> are before
+your submit your patch, so that your contribution will be easy for others to
+review and integrate.</p>
+
+<h4 id="review-patches-and-test-new-code">Review patches and test new code.</h4>
+
+<p>In order for patches to be integrated into Kudu as quickly as possible, they
+must be reviewed and tested. The more eyes, the better. Even if you are not a
+committer your review input is extremely valuable. Keep an eye on the <a href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Kudu
+gerrit instance</a>
+for patches that need review or testing.</p>
+
+<h4 id="write-and-review-documentation-or-a-blog-post">Write and review documentation or a blog post.</h4>
+
+<p>Making good documentation is critical to making great, usable software. If you
+see gaps in the documentation, please submit suggestions or corrections to the
+mailing list or submit documentation patches through Gerrit. You can also
+correct or improve error messages, log messages, or API docs.</p>
+
+<p>If you’d like to translate the Kudu documentation into a different language or
+you’d like to help in some other way, please <a href="mailto:dev@kudu.apache.org">let us know</a>.
+It’s best to review the <a href="docs/contributing.html#_documentation">documentation guidelines</a>
+before you get started.</p>
+
+<h4 id="request-and-review-examples">Request and review examples.</h4>
+
+<p>The <a href="https://github.com/apache/kudu/tree/master/examples">examples</a> directory
+includes working code examples. As more examples are requested and added, they
+will need review and clean-up. This is another way you can get involved.</p>
+
+<h3 id="meetups-user-groups-and-conference-presentations">Meetups, User Groups, and Conference Presentations</h3>
+
+<p>If you’re interested in hosting or presenting a Kudu-related talk or meetup in
+your city, get in touch by sending email to the user mailing list at
+<a href="mailto:user@kudu.apache.org">user@kudu.apache.org</a>
+so that we can feature them.</p>
+
+<p><strong>Presentations about Kudu are planned or have taken place at the following events:</strong></p>
+
+<ol>
+  <li>Thu, Oct 27, 2016. <a href="https://spark-summit.org/eu-2016/events/apache-kudu-and-spark-sql-for-fast-analytics-on-fast-data/">Spark Summit EU</a>. Brussels, Belgium.<br />
+<em>Apache Kudu and Spark SQL</em>. Presented by Mike Percy.</li>
+  <li>Tue, Sep 6, 2016. <a href="http://www.meetup.com/Boston-Cloudera-User-Group/events/233452964/">Boston Cloudera User Group</a>. Boston, MA, USA.<br />
+ Apache Kudu 0.10 and Spark SQL. Presented by William Berkeley.</li>
+  <li>Thu, Aug 18, 2016. <a href="http://www.meetup.com/Boulder-Denver-Big-Data/events/232056701/">Boulder/Denver Big Data Meetup</a>. Broomfield, CO, USA.<br />
+<em>Apache Kudu: New Apache Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by Mike Percy.</li>
+  <li>Wed, Aug 17, 2016. <a href="http://www.meetup.com/Denver-Cloudera-User-Group/events/232782782/">Denver Cloudera User Group</a>. Greenwood Village, CO, USA.<br />
+<em>Apache Kudu: New Apache Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by Mike Percy.</li>
+  <li>Thu, July 21, 2016. <a href="http://www.meetup.com/SVBigData/events/230427069/">Silicon Valley Big Data Meetup</a>. Palo Alto, CA, USA.<br />
+<em>Apache Kudu (incubating): New Apache Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by Mike Percy.</li>
+  <li>Wed, May 25, 2016. <a href="http://www.meetup.com/DFW-Cloudera-User-Group/events/230547045/">Dallas/Fort Worth Cloudera User Group</a>. Dallas, TX, USA.<br />
+<em>Apache Kudu: New Apache Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by Ryan Bosshart.</li>
+  <li>Thu, May 12, 2016. <a href="http://www.meetup.com/Vancouver-Spark/events/229692936/">Vancouver Spark Meetup</a>. Vancouver, BC, Canada.<br />
+<em>Kudu and Spark for fast analytics on streaming data</em>. Presented by Mike Percy and Dan Burkert.</li>
+  <li>Tue, May 10, 2016. <a href="http://apachebigdata2016.sched.org/event/6M1k/using-kafka-and-kudu-for-fast-low-latency-sql-analytics-on-streaming-data-mike-percy-ashish-singh-cloudera">Apache: Big Data 2016</a>. Vancouver, BC, Canada.<br />
+<em>Using Kafka and Kudu for fast, low-latency SQL analytics on streaming data</em>. Presented by Mike Percy and Ashish Singh.</li>
+  <li>Mon, May 9, 2016. <a href="http://apachebigdata2016.sched.org/event/6M0B/introduction-to-apache-kudu-incubating-for-timeseries-storage-dan-burkert-cloudera">Apache: Big Data 2016</a>. Vancouver, BC, Canada.<br />
+<em>Introduction to Apache Kudu (incubating) for timeseries storage</em>. Presented by Dan Burkert.</li>
+  <li>Wed, May 4, 2016. <a href="http://www.meetup.com/Cloudera-Tech-Meetup/events/230169394">Cloudera Tech Meetup</a>. Budapest, Hungary.<br />
+<em>Apache Kudu (incubating): New Apache Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by Adar Dembo.</li>
+  <li>Fri, Apr 8, 2016. <a href="http://www.dataengconf.com/hadoop-vs-kudu">DataEngConf</a>. San Francisco, CA, USA.<br />
+<em>Resolving Transactional Access/Analytic Performance Trade-offs in Apache Hadoop with Apache Kudu</em>.</li>
+  <li>Thu, Mar 31, 2016. <a href="http://conferences.oreilly.com/strata/hadoop-big-data-ca/public/schedule/detail/47055">Strata Hadoop World</a>. San Jose, CA, USA.<br />
+<em>Fast data made easy with Apache Kafka and Apache Kudu (incubating)</em>. Presented by Ted Malaska and Jeff Holoman.</li>
+  <li>Sat, Mar 19, 2016. <a href="http://chinahadoop.com/archives/1313">China Hadoop Summit 2016</a>. Beijing, China.<br />
+<em>使用Kudu构建统一实时数据分析服务的方法 (Using Kudu to build unified real-time data analysis services)</em>. Presented by Binglin Chang.</li>
+  <li>Thu, Mar 17, 2016. <a href="http://www.meetup.com/BigDataBoston/events/229317011/">Big Data Boston</a>. Boston, MA, USA.<br />
+<em>St. Patty’s Day meet-up on an Introduction to Apache Kudu</em>. Presented by Todd Lipcon.</li>
+  <li>Wed, Mar 16, 2016. <a href="http://www.govexec.com/sponsor-content/cloudera-tech-day-1/#cloudera-technology-day">Cloudera Technology Day</a>. Washington DC, USA.<br />
+<em>Apache Kudu (Incubating): New Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by Todd Lipcon.</li>
+  <li>Tue, Mar 1, 2016. <a href="http://www.meetup.com/rust-detroit/events/224586618/">Rust Detroit</a>. Detroit, MI, USA. <br />
+<em>Hadoop Next Gen: Using Kudu &amp; Mozilla Rust to Crunch Big Data!</em>. Presented by Dan Burkert.</li>
+  <li>Wed, Feb 24, 2016. <a href="http://www.meetup.com/Seattle-Scalability-Meetup/events/225955122/">Seattle Scalability Meetup</a>. Seattle, WA, USA. <br />
+<em>Resolving Transactional Access/Analytic Performance Trade-offs in Hadoop with Kudu</em>. Presented by Dan Burkert.</li>
+  <li>Tue, Feb 23, 2016. <a href="http://www.meetup.com/SF-Data-Engineering/events/228293610/">SF Data Engineering Meetup</a>. San Francisco, CA, USA. <br />
+<em>Intro to Apache Kudu</em>. Presented by Asim Jalis. (<a href="http://www.slideshare.net/AsimJalis/apache-kudu">slides</a>)</li>
+  <li>Thu, Feb 18, 2016. <a href="http://www.meetup.com/datakrk/events/228548317/">DataKRK Meetup</a>. Krakow, Poland. <br />
+<em>Are you KUDUing me?</em>. Presented by Przemek Maciołek. (<a href="http://www.slideshare.net/pmaciolek/are-you-kuduing-me">slides</a>)</li>
+  <li>Wed, Feb 17, 2016. <a href="http://www.meetup.com/hadoop/events/228573587/">Bay Area Hadoop User Group</a>. Sunnyvale, CA, USA. <br />
+<em>Apache Kudu (incubating): New Apache Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by David Alves. (<a href="https://www.youtube.com/watch?v=j3wYaz-kIvs">video</a>)</li>
+  <li>Wed, Feb 10, 2016. <a href="http://www.meetup.com/sfpython/events/228213876/">San Francisco Python Meetup Group</a>. San Francisco, CA, USA. <br />
+<em>Using Python at Scale for Data Science</em> (Python + Kudu + Ibis). Presented by Wes McKinney.</li>
+  <li>Mon, Feb 8, 2016. <a href="http://www.eventbrite.com/e/hadoop-spark-conference-japan-2016-tickets-20809016328">Hadoop / Spark Conference Japan 2016</a>. Tokyo, Japan. <br />
+<em>KuduによるHadoopのトランザクションアクセスと分析パフォーマンスのトレードオフ解消</em>. Presented by Todd Lipcon.</li>
+  <li>Wed, Jan 27, 2015. <a href="http://www.meetup.com/BigDataApps/events/227191025/">Big Data Application Meetup</a>. Palo Alto, CA, USA. <br />
+<em>Simplifying big data analytics with Apache Kudu</em>. Presented by Mike Percy. (<a href="https://www.youtube.com/watch?v=XzT1vDaAhys">video</a>)</li>
+  <li>Tue, Dec 15, 2015. <a href="http://www.meetup.com/San-Francisco-Spark-Hackers/events/226999521/">San Francisco Spark Hackers</a>. San Francisco, CA, USA. <br />
+<em>Faster than Parquet! A deep dive into Kudu</em>. Presented by Jean-Daniel Cryans. (<a href="https://www.youtube.com/watch?v=apJM46uH3oY">video</a>)</li>
+  <li>Thu, Dec 10, 2015. <a href="http://bdtc2015.hadooper.cn/">Big Data Technology Conference Beijing</a>. Beijing, China. <br />
+<em>Kudu: Fast analytics on fast data</em>. Presented by Todd Lipcon (Cloudera).</li>
+  <li>Wed, Dec 09, 2015. <a href="http://www.meetup.com/SF-Bay-Areas-Big-Data-Think-Tank/events/226497046/">The Hive Big Data Think Tank</a>. Palo Alto, CA, USA. <br />
+<em>Kudu: New Apache Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by Mike Percy (Cloudera). (<a href="https://www.youtube.com/watch?v=ifFg_o5bf6c">video</a>)</li>
+  <li>Tue, Dec 08, 2015. <a href="http://www.meetup.com/Korea-Big-Data-Think-Tank/events/226876563/">Korea Big Data Think Tank</a>. Seoul, Korea (South). <br />
+<em>Kudu: New Apache Hadoop Storage for Fast Analytics on Fast Data</em>. Presented by Todd Lipcon (Cloudera).</li>
+  <li>Sun, Dec 06, 2015. <a href="http://www.meetup.com/Shanghai-Big-Data-Streaming-Meetup/events/226970213/">Shanghai Big Data Streaming Meetup</a>. Shanghai, China. <br />
+<em>Kudu: Fast analytics on fast data</em>. Presented by Todd Lipcon (Cloudera).</li>
+  <li>Wed, Dec 02, 2015. <a href="http://conferences.oreilly.com/strata/big-data-conference-sg-2015/public/schedule/detail/47704">Kudu office hours at Strata Singapore</a>. Singapore. <br />
+Office hour with Todd Lipcon (Cloudera).</li>
+  <li>Wed, Dec 02, 2015. <a href="http://conferences.oreilly.com/strata/big-data-conference-sg-2015/public/schedule/detail/44040">Strata Singapore</a>. Singapore. <br />
+<em>Hadoop’s storage gap: Resolving transactional access/analytic performance trade-offs with Kudu</em>.
+Presented by Todd Lipcon (Cloudera).</li>
+  <li>Thu, Nov 05, 2015. <a href="http://www.meetup.com/Washington-DC-Area-Spark-Interactive/events/225954890/">Washington DC Area Apache Spark Interactive</a>. Washington, DC, USA. <br />
+<em>A Spark Auto Scaling Kudu Sneak Peek in 3s</em>.
+Presented by Jean-Daniel Cryans (Cloudera).</li>
+  <li>Thu, Oct 22, 2015. <a href="http://www.meetup.com/SF-Spark-and-Friends/events/226023299/">SF Spark and Friends</a>. San Francisco, CA, USA. <br />
+<em>Kudu: Data Store for the New Era, with Kafka+Spark+Kudu Demo</em>.
+Presented by Jean-Daniel Cryans (Cloudera).</li>
+  <li>Tue, Oct 06, 2015. <a href="http://www.meetup.com/hadoopsf/events/224616149/">San Francisco Hadoop User Group</a>. San Francisco, CA, USA. <br />
+<em>Resolving Transactional Access/Analytic Performance Trade-offs in Apache Hadoop</em>.
+Presented by Todd Lipcon (Cloudera).</li>
+  <li>Thu, Oct 01, 2015. <a href="http://strataconf.com/big-data-conference-ny-2015/public/schedule/detail/45391">Strata New York</a>. New York, NY, USA. <br />
+<em>Ask Me Anything Panel with the Kudu Development Team</em>.
+Presented by members of the Kudu development team.</li>
+  <li>Wed, Sep 30, 2015. <a href="http://strataconf.com/big-data-conference-ny-2015/public/schedule/detail/43114">Strata New York</a>. New York, NY, USA. <br />
+<em>Resolving Transactional Access/Analytic Performance Trade-offs in Apache Hadoop</em>.
+Presented by Todd Lipcon (Cloudera) and Binglin Chang (Xiaomi).</li>
+  <li>Tue, Sep 29, 2015. <a href="http://www.meetup.com/Hadoop-NYC/events/224102527/">NYC Hadoop User Group</a>. New York, NY, USA. <br />
+<em>Resolving Transactional Access/Analytic Performance Trade-offs in Apache Hadoop</em>.
+Presented by Todd Lipcon (Cloudera).</li>
+</ol>
+
+<h3 id="articles-demos-and-reviews">Articles, Demos, and Reviews</h3>
+
+<p>The Kudu community does not yet have a dedicated blog, but if you are
+interested in promoting a Kudu-related use case, we can help spread the word.
+<br />
+Send email to the user mailing list at
+<a href="mailto:user@kudu.apache.org">user@kudu.apache.org</a>
+with your content and we’ll help drive traffic.</p>
+
+<ul>
+  <li>Curt Monash from DBMS2 has written a three-part series about Kudu:
+<a href="http://www.dbms2.com/2015/09/28/introduction-to-cloudera-kudu/">an introduction to Kudu</a>,
+a <a href="http://www.dbms2.com/2015/09/28/cloudera-kudu-deep-dive/">technical deep dive</a>,
+and his analysis on
+<a href="http://www.dbms2.com/2015/09/28/the-potential-significance-of-cloudera-kudu/">the potential significance of Kudu</a>.</li>
+  <li>Zoomdata has created a video demo of
+<a href="https://www.youtube.com/watch?v=ck_kRb6qLKE">Zoomdata on top of Kudu</a>
+demonstrating real-time and point-in-time analytic queries on Kudu while
+simultaneously running a streaming ingest workload.</li>
+</ul>
+
+
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Apache Kudu 1.1 Release Notes</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li class="active">
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li >
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-9">
+
+<h1>Apache Kudu 1.1 Release Notes</h1>
+      <div class="sect1">
+<h2 id="rn_1.1.0_new_features"><a class="link" href="#rn_1.1.0_new_features">New features</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The Python client has been brought up to feature parity with the Java and C++ clients
+and as such the package version will be brought to 1.1 with this release (from 0.3). A
+list of the highlights can be found below.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Improved Partial Row semantics</p>
+</li>
+<li>
+<p>Range partition support</p>
+</li>
+<li>
+<p>Scan Token API</p>
+</li>
+<li>
+<p>Enhanced predicate support</p>
+</li>
+<li>
+<p>Support for all Kudu data types (including a mapping of Python&#8217;s <code>datetime.datetime</code> to
+<code>UNIXTIME_MICROS</code>)</p>
+</li>
+<li>
+<p>Alter table support</p>
+</li>
+<li>
+<p>Enabled Read at Snapshot for Scanners</p>
+</li>
+<li>
+<p>Enabled Scanner Replica Selection</p>
+</li>
+<li>
+<p>A few bug fixes for Python 3 in addition to various other improvements.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>IN LIST predicate pushdown support was added to allow optimized execution of filters which
+match on a set of column values. Support for Spark, Map Reduce and Impala queries utilizing
+IN LIST pushdown is not yet complete.</p>
+</li>
+<li>
+<p>The Java client now features client-side request tracing in order to help troubleshoot timeouts.
+Error messages are now augmented with traces that show which servers were contacted before the
+timeout occured instead of just the last error. The traces also contain RPCs that were
+required to fulfill the client&#8217;s request, such as contacting the master to discover a tablet&#8217;s
+location. Note that the traces are not available for successful requests and are not
+programatically queryable.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_optimizations_and_improvements"><a class="link" href="#_optimizations_and_improvements">Optimizations and improvements</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu now publishes JAR files for Spark 2.0 compiled with Scala 2.11 along with the
+existing Spark 1.6 JAR compiled with Scala 2.10.</p>
+</li>
+<li>
+<p>The Java client now allows configuring scanners to read from the closest replica instead of
+the known leader replica. The default remains the latter. Use the relevant <code>ReplicaSelection</code>
+enum with the scanner&#8217;s builder to change this behavior.</p>
+</li>
+<li>
+<p>Tablet servers use a new policy for retaining write-ahead log (WAL) segments.
+Previously, servers used the 'log_min_segments_to_retain' flag to prioritize
+any flushes which were retaining log segments past the configured value (default 2).
+This policy caused servers to flush in-memory data more frequently than necessary,
+limiting write performance.</p>
+<div class="paragraph">
+<p>The new policy introduces a new flag 'log_target_replay_size_mb' which
+  determines the threshold at which write-ahead log retention will prioritize flushes.
+  The new flag is considered experimental and users should not need to modify
+  its value.</p>
+</div>
+<div class="paragraph">
+<p>The improved policy has been seen to improve write performance in some use cases
+  by a factor of 2x relative to the old policy.</p>
+</div>
+</li>
+<li>
+<p>Kudu&#8217;s implementation of the Raft consensus algorithm has been improved to include
+a "pre-election" phase. This can improve the stability of tablet leader election
+in high-load scenarios, especially if each server hosts a high number of tablets.</p>
+</li>
+<li>
+<p>Tablet server start-up time has been substantially improved in the case that
+the server contains a high number of tombstoned tablet replicas.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_command_line_tools"><a class="link" href="#_command_line_tools">Command line tools</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The tool <code>kudu tablet leader_step_down</code> has been added to manually force a leader to step down.</p>
+</li>
+<li>
+<p>The tool <code>kudu remote_replica copy</code> has been added to manually copy a replica from
+one running tablet server to another.</p>
+</li>
+<li>
+<p>The tool <code>kudu local_replica delete</code> has been added to delete a replica of a tablet.</p>
+</li>
+<li>
+<p>The <code>kudu test loadgen</code> tool has been added to replace the obsoleted
+<code>insert-generated-rows</code> standalone binary. The new tool is enriched with
+additional functionality and can be used to run load generation tests against
+a Kudu cluster.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_wire_protocol_compatibility"><a class="link" href="#_wire_protocol_compatibility">Wire protocol compatibility</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu 1.1.0 is wire-compatible with previous versions of Kudu:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu 1.1 clients may connect to servers running Kudu 1.0. If the client uses the new
+'IN LIST' predicate type, an error will be returned.</p>
+</li>
+<li>
+<p>Kudu 1.0 clients may connect to servers running Kudu 1.1 without limitations.</p>
+</li>
+<li>
+<p>Rolling upgrade between Kudu 1.0 and Kudu 1.1 servers is believed to be possible
+though has not been sufficiently tested. Users are encouraged to shut down all nodes
+in the cluster, upgrade the software, and then restart the daemons on the new version.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rn_1.1.0_incompatible_changes"><a class="link" href="#rn_1.1.0_incompatible_changes">Incompatible changes in Kudu 1.1.0</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_client_apis_c_java_python"><a class="link" href="#_client_apis_c_java_python">Client APIs (C++/Java/Python)</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The C++ client no longer requires the
+<a href="https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html">old gcc5 ABI</a>.
+Which ABI is actually used depends on the compiler configuration. Some new distros
+(e.g. Ubuntu 16.04) will use the new ABI. Your application must use the same ABI as is
+used by the client library; an easy way to guarantee this is to use the same compiler
+to build both.</p>
+</li>
+<li>
+<p>The C++ client&#8217;s <code>KuduSession::CountBufferedOperations()</code> method is
+deprecated. Its behavior is inconsistent unless the session runs in the
+<code>MANUAL_FLUSH</code> mode. Instead, to get number of buffered operations, count
+invocations of the <code>KuduSession::Apply()</code> method since last
+<code>KuduSession::Flush()</code> call or, if using asynchronous flushing, since last
+invocation of the callback passed into <code>KuduSession::FlushAsync()</code>.</p>
+</li>
+<li>
+<p>The Java client&#8217;s <code>OperationResponse.getWriteTimestamp</code> method was renamed to <code>getWriteTimestampRaw</code>
+to emphasize that it doesn&#8217;t return milliseconds, unlike what its Javadoc indicated. The renamed
+method was also hidden from the public APIs and should not be used.</p>
+</li>
+<li>
+<p>The Java client&#8217;s sync API (<code>KuduClient</code>, <code>KuduSession</code>, <code>KuduScanner</code>) used to throw either
+a <code>NonRecoverableException</code> or a <code>TimeoutException</code> for a timeout, and now it&#8217;s only possible for the
+client to throw the former.</p>
+</li>
+<li>
+<p>The Java client&#8217;s handling of errors in <code>KuduSession</code> was modified so that subclasses of
+<code>KuduException</code> are converted into RowErrors instead of being thrown.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="known_issues_and_limitations"><a class="link" href="#known_issues_and_limitations">Known Issues and Limitations</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_schema_and_usage_limitations"><a class="link" href="#_schema_and_usage_limitations">Schema and Usage Limitations</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu is primarily designed for analytic use cases. You are likely to encounter issues if
+a single row contains multiple kilobytes of data.</p>
+</li>
+<li>
+<p>The columns which make up the primary key must be listed first in the schema.</p>
+</li>
+<li>
+<p>Key columns cannot be altered. You must drop and recreate a table to change its keys.</p>
+</li>
+<li>
+<p>Key columns must not be null.</p>
+</li>
+<li>
+<p>Columns with <code>DOUBLE</code>, <code>FLOAT</code>, or <code>BOOL</code> types are not allowed as part of a
+primary key definition.</p>
+</li>
+<li>
+<p>Type and nullability of existing columns cannot be changed by altering the table.</p>
+</li>
+<li>
+<p>A table’s primary key cannot be changed.</p>
+</li>
+<li>
+<p>Dropping a column does not immediately reclaim space. Compaction must run first.
+There is no way to run compaction manually, but dropping the table will reclaim the
+space immediately.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_partitioning_limitations"><a class="link" href="#_partitioning_limitations">Partitioning Limitations</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Tables must be manually pre-split into tablets using simple or compound primary
+keys. Automatic splitting is not yet possible. Range partitions may be added
+or dropped after a table has been created. See
+<a href="schema_design.html">Schema Design</a> for more information.</p>
+</li>
+<li>
+<p>Data in existing tables cannot currently be automatically repartitioned. As a workaround,
+create a new table with the new partitioning and insert the contents of the old
+table.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_replication_and_backup_limitations"><a class="link" href="#_replication_and_backup_limitations">Replication and Backup Limitations</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu does not currently include any built-in features for backup and restore.
+Users are encouraged to use tools such as Spark or Impala to export or import
+tables as necessary.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_impala_limitations"><a class="link" href="#_impala_limitations">Impala Limitations</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>To use Kudu with Impala, you must install a special release of Impala called
+Impala_Kudu. Obtaining and installing a compatible Impala release is detailed in Kudu&#8217;s
+<a href="kudu_impala_integration.html">Impala Integration</a> documentation.</p>
+</li>
+<li>
+<p>To use Impala_Kudu alongside an existing Impala instance, you must install using parcels.</p>
+</li>
+<li>
+<p>Updates, inserts, and deletes via Impala are non-transactional. If a query
+fails part of the way through, its partial effects will not be rolled back.</p>
+</li>
+<li>
+<p>No timestamp and decimal type support.</p>
+</li>
+<li>
+<p>The maximum parallelism of a single query is limited to the number of tablets
+in a table. For good analytic performance, aim for 10 or more tablets per host
+or use large tables.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_security_limitations"><a class="link" href="#_security_limitations">Security Limitations</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Authentication and authorization features are not implemented.</p>
+</li>
+<li>
+<p>Data encryption is not built in. Kudu has been reported to run correctly
+on systems using local block device encryption (e.g. <code>dmcrypt</code>).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_client_and_api_limitations"><a class="link" href="#_client_and_api_limitations">Client and API Limitations</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ALTER TABLE</code> is not yet fully supported via the client APIs. More <code>ALTER TABLE</code>
+operations will become available in future releases.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_other_known_issues"><a class="link" href="#_other_known_issues">Other Known Issues</a></h3>
+<div class="paragraph">
+<p>The following are known bugs and issues with the current release of Kudu. They will
+be addressed in later releases. Note that this list is not exhaustive, and is meant
+to communicate only the most important known issues.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the Kudu master is configured with the <code>-log_fsync_all</code> option, tablet servers
+and clients will experience frequent timeouts, and the cluster may become unusable.</p>
+</li>
+<li>
+<p>If a tablet server has a very large number of tablets, it may take several minutes
+to start up. It is recommended to limit the number of tablets per server to 100 or fewer.
+Consider this limitation when pre-splitting your tables. If you notice slow start-up times,
+you can monitor the number of tablets per server in the web UI.</p>
+</li>
+<li>
+<p>Due to a known bug in Linux kernels prior to 3.8, running Kudu on <code>ext4</code> mount points
+may cause a subsequent <code>fsck</code> to fail with errors such as <code>Logical start &lt;N&gt; does
+not match logical start &lt;M&gt; at next level</code>. These errors are repairable using <code>fsck -y</code>,
+but may impact server restart time.</p>
+<div class="paragraph">
+<p>This affects RHEL/CentOS 6.8 and below. A fix is planned for RHEL/CentOS 6.9.
+  RHEL 7.0 and higher are not affected. Ubuntu 14.04 and later are not affected.
+  SLES 12 and later are not affected.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resources"><a class="link" href="#_resources">Resources</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://kudu.apache.org">Kudu Website</a></p>
+</li>
+<li>
+<p><a href="http://github.com/apache/kudu">Kudu GitHub Repository</a></p>
+</li>
+<li>
+<p><a href="index.html">Kudu Documentation</a></p>
+</li>
+<li>
+<p><a href="prior_release_notes.html">Release notes for older releases</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installation_options"><a class="link" href="#_installation_options">Installation Options</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For full installation details, see <a href="installation.html">Kudu Installation</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_next_steps"><a class="link" href="#_next_steps">Next Steps</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="quickstart.html">Kudu Quickstart</a></p>
+</li>
+<li>
+<p><a href="installation.html">Installing Kudu</a></p>
+</li>
+<li>
+<p><a href="configuration.html">Configuring Kudu</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+    </div>
+    <div class="col-md-3">
+
+  <div id="toc" data-spy="affix" data-offset-top="70">
+  <ul>
+
+      <li>
+
+          <a href="index.html">Introducing Kudu</a> 
+      </li> 
+      <li>
+<span class="active-toc">Kudu Release Notes</span>
+            <ul class="sectlevel1">
+<li><a href="#rn_1.1.0_new_features">New features</a></li>
+<li><a href="#_optimizations_and_improvements">Optimizations and improvements</a>
+<ul class="sectlevel2">
+<li><a href="#_command_line_tools">Command line tools</a></li>
+</ul>
+</li>
+<li><a href="#_wire_protocol_compatibility">Wire protocol compatibility</a></li>
+<li><a href="#rn_1.1.0_incompatible_changes">Incompatible changes in Kudu 1.1.0</a>
+<ul class="sectlevel2">
+<li><a href="#_client_apis_c_java_python">Client APIs (C++/Java/Python)</a></li>
+</ul>
+</li>
+<li><a href="#known_issues_and_limitations">Known Issues and Limitations</a>
+<ul class="sectlevel2">
+<li><a href="#_schema_and_usage_limitations">Schema and Usage Limitations</a></li>
+<li><a href="#_partitioning_limitations">Partitioning Limitations</a></li>
+<li><a href="#_replication_and_backup_limitations">Replication and Backup Limitations</a></li>
+<li><a href="#_impala_limitations">Impala Limitations</a></li>
+<li><a href="#_security_limitations">Security Limitations</a></li>
+<li><a href="#_client_and_api_limitations">Client and API Limitations</a></li>
+<li><a href="#_other_known_issues">Other Known Issues</a></li>
+</ul>
+</li>
+<li><a href="#_resources">Resources</a></li>
+<li><a href="#_installation_options">Installation Options</a></li>
+<li><a href="#_next_steps">Next Steps</a></li>
+</ul> 
+      </li> 
+      <li>
+
+          <a href="quickstart.html">Getting Started with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="installation.html">Installation Guide</a> 
+      </li> 
+      <li>
+
+          <a href="configuration.html">Configuring Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="kudu_impala_integration.html">Using Impala with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="administration.html">Administering Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="troubleshooting.html">Troubleshooting Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="developing.html">Developing Applications with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="schema_design.html">Kudu Schema Design</a> 
+      </li> 
+      <li>
+
+          <a href="transaction_semantics.html">Kudu Transaction Semantics</a> 
+      </li> 
+      <li>
+
+          <a href="contributing.html">Contributing to Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="style_guide.html">Kudu Documentation Style Guide</a> 
+      </li> 
+      <li>
+
+          <a href="configuration_reference.html">Kudu Configuration Reference</a> 
+      </li> 
+      <li>
+
+          <a href="export_control.html">Export Control Notice</a> 
+      </li> 
+  </ul>
+  </div>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation.  Last updated 2016-11-17 10:36:43 PST 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

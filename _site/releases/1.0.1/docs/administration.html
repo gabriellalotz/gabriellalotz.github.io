@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Apache Kudu Administration</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li class="active">
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li >
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-9">
+
+<h1>Apache Kudu Administration</h1>
+      <div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Kudu is easier to manage with <a href="http://www.cloudera.com/content/www/en-us/products/cloudera-manager.html">Cloudera Manager</a>
+than in a standalone installation. See Cloudera&#8217;s
+<a href="http://www.cloudera.com/content/www/en-us/documentation/betas/kudu/latest/topics/kudu_installation.html">Kudu documentation</a>
+for more details about using Kudu with Cloudera Manager.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_starting_and_stopping_kudu_processes"><a class="link" href="#_starting_and_stopping_kudu_processes">Starting and Stopping Kudu Processes</a></h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start Kudu services using the following commands:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ sudo service kudu-master start
+$ sudo service kudu-tserver start</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To stop Kudu services, use the following commands:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ sudo service kudu-master stop
+$ sudo service kudu-tserver stop</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kudu_web_interfaces"><a class="link" href="#_kudu_web_interfaces">Kudu Web Interfaces</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu tablet servers and masters expose useful operational information on a built-in web interface,</p>
+</div>
+<div class="sect2">
+<h3 id="_kudu_master_web_interface"><a class="link" href="#_kudu_master_web_interface">Kudu Master Web Interface</a></h3>
+<div class="paragraph">
+<p>Kudu master processes serve their web interface on port 8051. The interface exposes several pages
+with information about the cluster state:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A list of tablet servers, their host names, and the time of their last heartbeat.</p>
+</li>
+<li>
+<p>A list of tables, including schema and tablet location information for each.</p>
+</li>
+<li>
+<p>SQL code which you can paste into Impala Shell to add an existing table to Impala&#8217;s list of known data sources.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kudu_tablet_server_web_interface"><a class="link" href="#_kudu_tablet_server_web_interface">Kudu Tablet Server Web Interface</a></h3>
+<div class="paragraph">
+<p>Each tablet server serves a web interface on port 8050. The interface exposes information
+about each tablet hosted on the server, its current state, and debugging information
+about maintenance background operations.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_common_web_interface_pages"><a class="link" href="#_common_web_interface_pages">Common Web Interface Pages</a></h3>
+<div class="paragraph">
+<p>Both Kudu masters and tablet servers expose a common set of information via their web interfaces:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>HTTP access to server logs.</p>
+</li>
+<li>
+<p>an <code>/rpcz</code> endpoint which lists currently running RPCs via JSON.</p>
+</li>
+<li>
+<p>pages giving an overview and detailed information on the memory usage of different
+components of the process.</p>
+</li>
+<li>
+<p>information on the current set of configuration flags.</p>
+</li>
+<li>
+<p>information on the currently running threads and their resource consumption.</p>
+</li>
+<li>
+<p>a JSON endpoint exposing metrics about the server.</p>
+</li>
+<li>
+<p>information on the deployed version number of the daemon.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These interfaces are linked from the landing page of each daemon&#8217;s web UI.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kudu_metrics"><a class="link" href="#_kudu_metrics">Kudu Metrics</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu daemons expose a large number of metrics. Some metrics are associated with an entire
+server process, whereas others are associated with a particular tablet replica.</p>
+</div>
+<div class="sect2">
+<h3 id="_listing_available_metrics"><a class="link" href="#_listing_available_metrics">Listing available metrics</a></h3>
+<div class="paragraph">
+<p>The full set of available metrics for a Kudu server can be dumped via a special command
+line flag:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu-tserver --dump_metrics_json
+$ kudu-master --dump_metrics_json</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will output a large JSON document. Each metric indicates its name, label, description,
+units, and type. Because the output is JSON-formatted, this information can easily be
+parsed and fed into other tooling which collects metrics from Kudu servers.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_collecting_metrics_via_http"><a class="link" href="#_collecting_metrics_via_http">Collecting metrics via HTTP</a></h3>
+<div class="paragraph">
+<p>Metrics can be collected from a server process via its HTTP interface by visiting
+<code>/metrics</code>. The output of this page is JSON for easy parsing by monitoring services.
+This endpoint accepts several <code>GET</code> parameters in its query string:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>/metrics?metrics=&lt;substring1&gt;,&lt;substring2&gt;,&#8230;&#8203;</code> - limits the returned metrics to those which contain
+at least one of the provided substrings. The substrings also match entity names, so this
+may be used to collect metrics for a specific tablet.</p>
+</li>
+<li>
+<p><code>/metrics?include_schema=1</code> - includes metrics schema information such as unit, description,
+and label in the JSON output. This information is typically elided to save space.</p>
+</li>
+<li>
+<p><code>/metrics?compact=1</code> - eliminates unnecessary whitespace from the resulting JSON, which can decrease
+bandwidth when fetching this page from a remote host.</p>
+</li>
+<li>
+<p><code>/metrics?include_raw_histograms=1</code> - include the raw buckets and values for histogram metrics,
+enabling accurate aggregation of percentile metrics over time and across hosts.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl -s 'http://example-ts:8050/metrics?include_schema=1&amp;metrics=connections_accepted'</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">[
+    {
+        "type": "server",
+        "id": "kudu.tabletserver",
+        "attributes": {},
+        "metrics": [
+            {
+                "name": "rpc_connections_accepted",
+                "label": "RPC Connections Accepted",
+                "type": "counter",
+                "unit": "connections",
+                "description": "Number of incoming TCP connections made to the RPC server",
+                "value": 92
+            }
+        ]
+    }
+]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl -s 'http://example-ts:8050/metrics?metrics=log_append_latency'</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">[
+    {
+        "type": "tablet",
+        "id": "c0ebf9fef1b847e2a83c7bd35c2056b1",
+        "attributes": {
+            "table_name": "lineitem",
+            "partition": "hash buckets: (55), range: [(&lt;start&gt;), (&lt;end&gt;))",
+            "table_id": ""
+        },
+        "metrics": [
+            {
+                "name": "log_append_latency",
+                "total_count": 7498,
+                "min": 4,
+                "mean": 69.3649,
+                "percentile_75": 29,
+                "percentile_95": 38,
+                "percentile_99": 45,
+                "percentile_99_9": 95,
+                "percentile_99_99": 167,
+                "max": 367244,
+                "total_sum": 520098
+            }
+        ]
+    }
+]</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+All histograms and counters are measured since the server start time, and are not reset upon collection.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_collecting_metrics_to_a_log"><a class="link" href="#_collecting_metrics_to_a_log">Collecting metrics to a log</a></h3>
+<div class="paragraph">
+<p>Kudu may be configured to periodically dump all of its metrics to a local log file using the
+<code>--metrics_log_interval_ms</code> flag. Set this flag to the interval at which metrics should be written
+to a log file.</p>
+</div>
+<div class="paragraph">
+<p>The metrics log will be written to the same directory as the other Kudu log files, with the same
+naming format. After any metrics log file reaches 64MB uncompressed, the log will be rolled and
+the previous file will be gzip-compressed.</p>
+</div>
+<div class="paragraph">
+<p>The log file generated has three space-separated fields. The first field is the word
+<code>metrics</code>. The second field is the current timestamp in microseconds since the Unix epoch.
+The third is the current value of all metrics on the server, using a compact JSON encoding.
+The encoding is the same as the metrics fetched via HTTP described above.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Although metrics logging automatically rolls and compresses previous log files, it does
+not remove old ones. Since metrics logging can use significant amounts of disk space,
+consider setting up a system utility to monitor space in the log directory and archive or
+delete old segments.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_common_kudu_workflows"><a class="link" href="#_common_kudu_workflows">Common Kudu workflows</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="migrate_to_multi_master"><a class="link" href="#migrate_to_multi_master">Migrating to Multiple Kudu Masters</a></h3>
+<div class="paragraph">
+<p>For high availability and to avoid a single point of failure, Kudu clusters should be created with
+multiple masters. Many Kudu clusters were created with just a single master, either for simplicity
+or because Kudu multi-master support was still experimental at the time. This workflow demonstrates
+how to migrate to a multi-master configuration.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The workflow is unsafe for adding new masters to an existing multi-master configuration.
+Do not use it for that purpose.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The workflow presupposes at least basic familiarity with Kudu configuration management. If
+using Cloudera Manager (CM), the workflow also presupposes familiarity with it.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+All of the command line steps below should be executed as the Kudu UNIX user, typically
+<code>kudu</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_prepare_for_the_migration"><a class="link" href="#_prepare_for_the_migration">Prepare for the migration</a></h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Establish a maintenance window (one hour should be sufficient). During this time the Kudu cluster
+will be unavailable.</p>
+</li>
+<li>
+<p>Decide how many masters to use. The number of masters should be odd. Three or five node master
+configurations are recommendeded; they can tolerate one or two failures respectively.</p>
+</li>
+<li>
+<p>Perform the following preparatory steps for the existing master:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Identify and record the directory where the master&#8217;s data lives. If using Kudu system packages,
+the default value is /var/lib/kudu/master, but it may be customized via the <code>fs_wal_dir</code>
+configuration parameter.</p>
+</li>
+<li>
+<p>Identify and record the port the master is using for RPCs. The default port value is 7051, but it
+may have been customized using the <code>rpc_bind_addresses</code> configuration parameter.</p>
+</li>
+<li>
+<p>Identify the master&#8217;s UUID. It can be fetched using the following command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu fs dump uuid --fs_wal_dir=&lt;master_data_dir&gt; 2&gt;/dev/null</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">master_data_dir</dt>
+<dd>
+<p>existing master&#8217;s previously recorded data directory</p>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre>$ kudu fs dump uuid --fs_wal_dir=/var/lib/kudu/master 2&gt;/dev/null
+4aab798a69e94fab8d77069edff28ce0</pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>Optional: configure a DNS alias for the master. The alias could be a DNS cname (if the machine
+already has an A record in DNS), an A record (if the machine is only known by its IP address),
+or an alias in /etc/hosts. The alias should be an abstract representation of the master (e.g.
+<code>master-1</code>).</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Without DNS aliases it is not possible to recover from permanent master failures, and as
+such it is highly recommended.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Perform the following preparatory steps for each new master:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Choose an unused machine in the cluster. The master generates very little load so it can be
+colocated with other data services or load-generating processes, though not with another Kudu
+master from the same configuration.</p>
+</li>
+<li>
+<p>Ensure Kudu is installed on the machine, either via system packages (in which case the <code>kudu</code> and
+<code>kudu-master</code> packages should be installed), or via some other means.</p>
+</li>
+<li>
+<p>Choose and record the directory where the master&#8217;s data will live.</p>
+</li>
+<li>
+<p>Choose and record the port the master should use for RPCs.</p>
+</li>
+<li>
+<p>Optional: configure a DNS alias for the master (e.g. <code>master-2</code>, <code>master-3</code>, etc).</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_perform_the_migration"><a class="link" href="#_perform_the_migration">Perform the migration</a></h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Stop all the Kudu processes in the entire cluster.</p>
+</li>
+<li>
+<p>Format the data directory on each new master machine, and record the generated UUID. Use the
+following command sequence:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu fs format --fs_wal_dir=&lt;master_data_dir&gt;
+$ kudu fs dump uuid --fs_wal_dir=&lt;master_data_dir&gt; 2&gt;/dev/null</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">master_data_dir</dt>
+<dd>
+<p>new master&#8217;s previously recorded data directory</p>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre>$ kudu fs format --fs_wal_dir=/var/lib/kudu/master
+$ kudu fs dump uuid --fs_wal_dir=/var/lib/kudu/master 2&gt;/dev/null
+f5624e05f40649b79a757629a69d061e</pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>If using CM, add the new Kudu master roles now, but do not start them.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If using DNS aliases, override the empty value of the <code>Master Address</code> parameter for each role
+(including the existing master role) with that master&#8217;s alias.</p>
+</li>
+<li>
+<p>Add the port number (separated by a colon) if using a non-default RPC port value.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Rewrite the master&#8217;s Raft configuration with the following command, executed on the existing
+master machine:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu local_replica cmeta rewrite_raft_config --fs_wal_dir=&lt;master_data_dir&gt; &lt;tablet_id&gt; &lt;all_masters&gt;</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">master_data_dir</dt>
+<dd>
+<p>existing master&#8217;s previously recorded data directory</p>
+</dd>
+<dt class="hdlist1">tablet_id</dt>
+<dd>
+<p>must be the string <code>00000000000000000000000000000000</code></p>
+</dd>
+<dt class="hdlist1">all_masters</dt>
+<dd>
+<p>space-separated list of masters, both new and existing. Each entry in the list must be
+a string of the form <code>&lt;uuid&gt;:&lt;hostname&gt;:&lt;port&gt;</code></p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">uuid</dt>
+<dd>
+<p>master&#8217;s previously recorded UUID</p>
+</dd>
+<dt class="hdlist1">hostname</dt>
+<dd>
+<p>master&#8217;s previously recorded hostname or alias</p>
+</dd>
+<dt class="hdlist1">port</dt>
+<dd>
+<p>master&#8217;s previously recorded RPC port number</p>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre>$ kudu local_replica cmeta rewrite_raft_config --fs_wal_dir=/var/lib/kudu/master 00000000000000000000000000000000 4aab798a69e94fab8d77069edff28ce0:master-1:7051 f5624e05f40649b79a757629a69d061e:master-2:7051 988d8ac6530f426cbe180be5ba52033d:master-3:7051</pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>Start the existing master.</p>
+</li>
+<li>
+<p>Copy the master data to each new master with the following command, executed on each new master
+machine:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu local_replica copy_from_remote --fs_wal_dir=&lt;master_data_dir&gt; &lt;tablet_id&gt; &lt;existing_master&gt;</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">master_data_dir</dt>
+<dd>
+<p>new master&#8217;s previously recorded data directory</p>
+</dd>
+<dt class="hdlist1">tablet_id</dt>
+<dd>
+<p>must be the string <code>00000000000000000000000000000000</code></p>
+</dd>
+<dt class="hdlist1">existing_master</dt>
+<dd>
+<p>RPC address of the existing master and must be a string of the form
+<code>&lt;hostname&gt;:&lt;port&gt;</code></p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">hostname</dt>
+<dd>
+<p>existing master&#8217;s previously recorded hostname or alias</p>
+</dd>
+<dt class="hdlist1">port</dt>
+<dd>
+<p>existing master&#8217;s previously recorded RPC port number</p>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre>$ kudu local_replica copy_from_remote --fs_wal_dir=/var/lib/kudu/master 00000000000000000000000000000000 master-1:7051</pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>Start all of the new masters.</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Skip the next step if using CM.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Modify the value of the <code>tserver_master_addrs</code> configuration parameter for each tablet server.
+The new value must be a comma-separated list of masters where each entry is a string of the form
+<code>&lt;hostname&gt;:&lt;port&gt;</code></p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">hostname</dt>
+<dd>
+<p>master&#8217;s previously recorded hostname or alias</p>
+</dd>
+<dt class="hdlist1">port</dt>
+<dd>
+<p>master&#8217;s previously recorded RPC port number</p>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>Start all of the tablet servers.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Congratulations, the cluster has now been migrated to multiple masters! To verify that all masters
+are working properly, consider performing the following sanity checks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using a browser, visit each master&#8217;s web UI. Look at the /masters page. All of the masters should
+be listed there with one master in the LEADER role and the others in the FOLLOWER role. The
+contents of /masters on each master should be the same.</p>
+</li>
+<li>
+<p>Run a Kudu system check (ksck) on the cluster using the <code>kudu</code> command line tool. Help for ksck
+can be viewed via <code>kudu cluster ksck --help</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_recovering_from_a_dead_kudu_master_in_a_multi_master_deployment"><a class="link" href="#_recovering_from_a_dead_kudu_master_in_a_multi_master_deployment">Recovering from a dead Kudu Master in a Multi-Master Deployment</a></h3>
+<div class="paragraph">
+<p>Kudu multi-master deployments function normally in the event of a master loss. However, it is
+important to replace the dead master; otherwise a second failure may lead to a loss of availability,
+depending on the number of available masters. This workflow describes how to replace the dead
+master.</p>
+</div>
+<div class="paragraph">
+<p>Due to <a href="https://issues.apache.org/jira/browse/KUDU-1620">KUDU-1620</a>, it is not possible to perform
+this workflow without also restarting the live masters. As such, the workflow requires a
+maintenance window, albeit a brief one as masters generally restart quickly.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Kudu does not yet support Raft configuration changes for masters. As such, it is only
+possible to replace a master if the deployment was created with DNS aliases. See the
+<a href="#migrate_to_multi_master">multi-master migration workflow</a> for more details.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The workflow presupposes at least basic familiarity with Kudu configuration management. If
+using Cloudera Manager (CM), the workflow also presupposes familiarity with it.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+All of the command line steps below should be executed as the Kudu UNIX user, typically
+<code>kudu</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_prepare_for_the_recovery"><a class="link" href="#_prepare_for_the_recovery">Prepare for the recovery</a></h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Ensure that the dead master is well and truly dead. Take whatever steps needed to prevent it from
+accidentally restarting; this can be quite dangerous for the cluster post-recovery.</p>
+</li>
+<li>
+<p>Choose one of the remaining live masters to serve as a basis for recovery. The rest of this
+workflow will refer to this master as the "reference" master.</p>
+</li>
+<li>
+<p>Choose an unused machine in the cluster where the new master will live. The master generates very
+little load so it can be colocated with other data services or load-generating processes, though
+not with another Kudu master from the same configuration. The rest of this workflow will refer to
+this master as the "replacement" master.</p>
+</li>
+<li>
+<p>Perform the following preparatory steps for the replacement master:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Ensure Kudu is installed on the machine, either via system packages (in which case the <code>kudu</code> and
+<code>kudu-master</code> packages should be installed), or via some other means.</p>
+</li>
+<li>
+<p>Choose and record the directory where the master&#8217;s data will live.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Perform the following preparatory steps for each live master:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Identify and record the directory where the master&#8217;s data lives. If using Kudu system packages,
+the default value is /var/lib/kudu/master, but it may be customized via the <code>fs_wal_dir</code>
+configuration parameter.</p>
+</li>
+<li>
+<p>Identify and record the master&#8217;s UUID. It can be fetched using the following command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu fs dump uuid --fs_wal_dir=&lt;master_data_dir&gt; 2&gt;/dev/null</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">master_data_dir</dt>
+<dd>
+<p>live master&#8217;s previously recorded data directory</p>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre>$ kudu fs dump uuid --fs_wal_dir=/var/lib/kudu/master 2&gt;/dev/null
+80a82c4b8a9f4c819bab744927ad765c</pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Perform the following preparatory steps for the reference master:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Identify and record the directory where the master&#8217;s data lives. If using Kudu system packages,
+the default value is /var/lib/kudu/master, but it may be customized via the <code>fs_wal_dir</code>
+configuration parameter.</p>
+</li>
+<li>
+<p>Identify and record the UUIDs of every master in the cluster, using the following command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu local_replica cmeta print_replica_uuids --fs_wal_dir=&lt;master_data_dir&gt; &lt;tablet_id&gt; 2&gt;/dev/null</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">master_data_dir</dt>
+<dd>
+<p>reference master&#8217;s previously recorded data directory</p>
+</dd>
+<dt class="hdlist1">tablet_id</dt>
+<dd>
+<p>must be the string <code>00000000000000000000000000000000</code></p>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre>$ kudu local_replica cmeta print_replica_uuids --fs_wal_dir=/var/lib/kudu/master 00000000000000000000000000000000 2&gt;/dev/null
+80a82c4b8a9f4c819bab744927ad765c 2a73eeee5d47413981d9a1c637cce170 1c3f3094256347528d02ec107466aef3</pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Using the two previously-recorded lists of UUIDs (one for all live masters and one for all
+masters), determine and record (by process of elimination) the UUID of the dead master.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_perform_the_recovery"><a class="link" href="#_perform_the_recovery">Perform the recovery</a></h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Format the data directory on the replacement master machine using the previously recorded
+UUID of the dead master. Use the following command sequence:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu fs format --fs_wal_dir=&lt;master_data_dir&gt; --uuid=&lt;uuid&gt;</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">master_data_dir</dt>
+<dd>
+<p>replacement master&#8217;s previously recorded data directory</p>
+</dd>
+<dt class="hdlist1">uuid</dt>
+<dd>
+<p>dead master&#8217;s previously recorded UUID</p>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre>$ kudu fs format --fs_wal_dir=/var/lib/kudu/master --uuid=80a82c4b8a9f4c819bab744927ad765c</pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>Copy the master data to the replacement master with the following command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ kudu local_replica copy_from_remote --fs_wal_dir=&lt;master_data_dir&gt; &lt;tablet_id&gt; &lt;reference_master&gt;</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">master_data_dir</dt>
+<dd>
+<p>replacement master&#8217;s previously recorded data directory</p>
+</dd>
+<dt class="hdlist1">tablet_id</dt>
+<dd>
+<p>must be the string <code>00000000000000000000000000000000</code></p>
+</dd>
+<dt class="hdlist1">reference_master</dt>
+<dd>
+<p>RPC address of the reference master and must be a string of the form
+<code>&lt;hostname&gt;:&lt;port&gt;</code></p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">hostname</dt>
+<dd>
+<p>reference master&#8217;s previously recorded hostname or alias</p>
+</dd>
+<dt class="hdlist1">port</dt>
+<dd>
+<p>reference master&#8217;s previously recorded RPC port number</p>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre>$ kudu local_replica copy_from_remote --fs_wal_dir=/var/lib/kudu/master 00000000000000000000000000000000 master-2:7051</pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>If using CM, add the replacement Kudu master role now, but do not start it.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Override the empty value of the <code>Master Address</code> parameter for the new role with the replacement
+master&#8217;s alias.</p>
+</li>
+<li>
+<p>Add the port number (separated by a colon) if using a non-default RPC port value.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Reconfigure the DNS alias for the dead master to point at the replacement master.</p>
+</li>
+<li>
+<p>Start the replacement master.</p>
+</li>
+<li>
+<p>Restart the existing live masters. This results in a brief availability outage, but it should
+last only as long as it takes for the masters to come back up.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Congratulations, the dead master has been replaced! To verify that all masters are working properly,
+consider performing the following sanity checks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using a browser, visit each master&#8217;s web UI. Look at the /masters page. All of the masters should
+be listed there with one master in the LEADER role and the others in the FOLLOWER role. The
+contents of /masters on each master should be the same.</p>
+</li>
+<li>
+<p>Run a Kudu system check (ksck) on the cluster using the <code>kudu</code> command line tool. Help for ksck
+can be viewed via <code>kudu cluster ksck --help</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+    </div>
+    <div class="col-md-3">
+
+  <div id="toc" data-spy="affix" data-offset-top="70">
+  <ul>
+
+      <li>
+
+          <a href="index.html">Introducing Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="release_notes.html">Kudu Release Notes</a> 
+      </li> 
+      <li>
+
+          <a href="quickstart.html">Getting Started with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="installation.html">Installation Guide</a> 
+      </li> 
+      <li>
+
+          <a href="configuration.html">Configuring Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="kudu_impala_integration.html">Using Impala with Kudu</a> 
+      </li> 
+      <li>
+<span class="active-toc">Administering Kudu</span>
+            <ul class="sectlevel1">
+<li><a href="#_starting_and_stopping_kudu_processes">Starting and Stopping Kudu Processes</a></li>
+<li><a href="#_kudu_web_interfaces">Kudu Web Interfaces</a>
+<ul class="sectlevel2">
+<li><a href="#_kudu_master_web_interface">Kudu Master Web Interface</a></li>
+<li><a href="#_kudu_tablet_server_web_interface">Kudu Tablet Server Web Interface</a></li>
+<li><a href="#_common_web_interface_pages">Common Web Interface Pages</a></li>
+</ul>
+</li>
+<li><a href="#_kudu_metrics">Kudu Metrics</a>
+<ul class="sectlevel2">
+<li><a href="#_listing_available_metrics">Listing available metrics</a></li>
+<li><a href="#_collecting_metrics_via_http">Collecting metrics via HTTP</a></li>
+<li><a href="#_collecting_metrics_to_a_log">Collecting metrics to a log</a></li>
+</ul>
+</li>
+<li><a href="#_common_kudu_workflows">Common Kudu workflows</a>
+<ul class="sectlevel2">
+<li><a href="#migrate_to_multi_master">Migrating to Multiple Kudu Masters</a>
+<ul class="sectlevel3">
+<li><a href="#_prepare_for_the_migration">Prepare for the migration</a></li>
+<li><a href="#_perform_the_migration">Perform the migration</a></li>
+</ul>
+</li>
+<li><a href="#_recovering_from_a_dead_kudu_master_in_a_multi_master_deployment">Recovering from a dead Kudu Master in a Multi-Master Deployment</a>
+<ul class="sectlevel3">
+<li><a href="#_prepare_for_the_recovery">Prepare for the recovery</a></li>
+<li><a href="#_perform_the_recovery">Perform the recovery</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul> 
+      </li> 
+      <li>
+
+          <a href="troubleshooting.html">Troubleshooting Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="developing.html">Developing Applications with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="schema_design.html">Kudu Schema Design</a> 
+      </li> 
+      <li>
+
+          <a href="transaction_semantics.html">Kudu Transaction Semantics</a> 
+      </li> 
+      <li>
+
+          <a href="contributing.html">Contributing to Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="style_guide.html">Kudu Documentation Style Guide</a> 
+      </li> 
+      <li>
+
+          <a href="configuration_reference.html">Kudu Configuration Reference</a> 
+      </li> 
+  </ul>
+  </div>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation.  Last updated 2016-10-07 11:34:55 PDT 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

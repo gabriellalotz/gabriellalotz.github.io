@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Kudu FAQ</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li >
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li class="active">
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+
+<div class="row-fluid">
+  <div class="col-lg-12 faq">
+
+<h2 class="no_toc" id="frequently-asked-questions">Frequently Asked Questions</h2>
+
+<ul id="markdown-toc">
+  <li><a href="#project-motivation" id="markdown-toc-project-motivation">Project Motivation</a></li>
+  <li><a href="#project-status" id="markdown-toc-project-status">Project Status</a></li>
+  <li><a href="#getting-started" id="markdown-toc-getting-started">Getting Started</a></li>
+  <li><a href="#storage-details" id="markdown-toc-storage-details">Storage Details</a></li>
+  <li><a href="#consistency-and-cap-theorem" id="markdown-toc-consistency-and-cap-theorem">Consistency and CAP Theorem</a></li>
+  <li><a href="#working-with-other-storage-systems" id="markdown-toc-working-with-other-storage-systems">Working With Other Storage Systems</a></li>
+  <li><a href="#hardware-and-operations" id="markdown-toc-hardware-and-operations">Hardware and Operations</a></li>
+  <li><a href="#security" id="markdown-toc-security">Security</a></li>
+  <li><a href="#schema-design" id="markdown-toc-schema-design">Schema Design</a></li>
+  <li><a href="#indexes" id="markdown-toc-indexes">Indexes</a></li>
+  <li><a href="#transactions" id="markdown-toc-transactions">Transactions</a></li>
+</ul>
+
+<h3 id="project-motivation">Project Motivation</h3>
+
+<h4 id="why-use-column-storage-format-would-a-row-wise-format-increase-performance">Why use column storage format? Would a row-wise format increase performance?</h4>
+
+<p>Analytic use-cases almost exclusively use a subset of the columns in the queried
+table and generally aggregate values over a broad range of rows. This access pattern
+is greatly accelerated by column oriented data. Operational use-cases are more
+likely to access most or all of the columns in a row, and might be more appropriately
+served by row oriented storage. A column oriented storage format was chosen for
+Kudu because it’s primarily targeted at analytic use-cases.</p>
+
+<p>There’s nothing that precludes Kudu from providing a row-oriented option, and it
+could be included in a potential release.</p>
+
+<h4 id="why-build-a-new-storage-engine-why-not-just-improve-apache-hbase-to-increase-its-scan-speed">Why build a new storage engine? Why not just improve Apache HBase to increase its scan speed?</h4>
+
+<p>Kudu shares some characteristics with HBase. Like HBase, it is a real-time store
+that supports key-indexed record lookup and mutation.</p>
+
+<p>However, Kudu’s design differs from HBase in some fundamental ways:</p>
+
+<ul>
+  <li>Kudu’s data model is more traditionally relational, while HBase is schemaless.</li>
+  <li>Kudu’s on-disk representation is truly columnar and follows an entirely different
+storage design than HBase/BigTable.</li>
+</ul>
+
+<p>Making these fundamental changes in HBase would require a massive redesign, as opposed
+to a series of simple changes. HBase is the right design for many classes of
+applications and use cases and will continue to be the best storage engine for those
+workloads.</p>
+
+<h3 id="project-status">Project Status</h3>
+
+<h4 id="is-apache-kudu-ready-to-be-deployed-into-production-yet">Is Apache Kudu ready to be deployed into production yet?</h4>
+
+<p>Yes! Kudu has been battle tested in production at many major corporations.</p>
+
+<h4 id="is-kudu-open-source">Is Kudu open source?</h4>
+
+<p>Yes, Kudu is open source and licensed under the Apache Software License, version 2.0.
+Apache Kudu is a top level project (TLP) under the umbrella of the Apache Software Foundation.</p>
+
+<h4 id="why-was-kudu-developed-internally-at-cloudera-before-its-release">Why was Kudu developed internally at Cloudera before its release?</h4>
+
+<p>We believe strongly in the value of open source for the long-term sustainable
+development of a project. We also believe that it is easier to work with a small
+group of colocated developers when a project is very young. Being in the same
+organization allowed us to move quickly during the initial design and development
+of the system.</p>
+
+<p>Now that Kudu is public and is part of the Apache Software Foundation, we look
+forward to working with a larger community during its next phase of development.</p>
+
+<h3 id="getting-started">Getting Started</h3>
+
+<h4 id="is-training-available">Is training available?</h4>
+
+<p>Training is not provided by the Apache Software Foundation, but may be provided
+by third-party vendors.</p>
+
+<p>As of January 2016, Cloudera offers an
+<a href="https://university.cloudera.com/content/cloudera-university-ondemand-introduction-to-apache-kudu">on-demand training course</a>
+entitled “Introduction to Apache Kudu”.
+This training covers what Kudu is, and how it compares to other Hadoop-related
+storage systems, use cases that will benefit from using Kudu, and how to create,
+store, and access data in Kudu tables with Apache Impala.</p>
+
+<p>Aside from training, you can also get help with using Kudu through
+<a href="docs/index.html">documentation</a>,
+the <a href="community.html">mailing lists</a>,
+and the <a href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Kudu chat room</a>.</p>
+
+<h4 id="is-there-a-quickstart">Is there a quickstart?</h4>
+
+<p>Yes. Instructions on getting up and running on Kudu via a Docker based quickstart are provided in Kudu’s
+<a href="http://kudu.apache.org/docs/quickstart.html">quickstart guide</a>.</p>
+
+<h3 id="storage-details">Storage Details</h3>
+
+<h4 id="how-does-kudu-store-its-data-is-the-underlying-data-storage-readable-without-going-through-kudu">How does Kudu store its data? Is the underlying data storage readable without going through Kudu?</h4>
+
+<p>Kudu accesses storage devices through the local filesystem, and works best with Ext4 or
+XFS. Kudu handles striping across <abbr title="just a bunch of disks">JBOD</abbr> mount
+points, and does not require <abbr title="redundant array of inexpensive disks">RAID</abbr>.
+Kudu’s write-ahead logs (WALs) can be stored on separate locations from the data files,
+which means that WALs can be stored on <abbr title="solid state drives">SSDs</abbr> to
+enable lower-latency writes on systems with both SSDs and magnetic disks.</p>
+
+<p>Kudu’s on-disk data format closely resembles Parquet, with a few differences to
+support efficient random access as well as updates. The underlying data is not
+directly queryable without using the Kudu client APIs. The Kudu developers have worked hard
+to ensure that Kudu’s scan performance is performant, and has focused on storing data
+efficiently without making the trade-offs that would be required to allow direct access
+to the data files.</p>
+
+<h4 id="is-kudu-an-in-memory-database">Is Kudu an in-memory database?</h4>
+
+<p>Kudu is not an
+<a href="https://en.wikipedia.org/wiki/In-memory_database">in-memory database</a>
+since it primarily relies on disk storage. This should not be confused with Kudu’s
+experimental use of
+<a href="https://en.wikipedia.org/wiki/Non-volatile_memory">persistent memory</a>
+which is integrated in the block cache. In the future, this integration this will
+allow the cache to survive tablet server restarts, so that it never starts “cold”.</p>
+
+<p>In addition, Kudu’s C++ implementation can scale to very large heaps. Coupled
+with its CPU-efficient design, Kudu’s heap scalability offers outstanding
+performance for data sets that fit in memory.</p>
+
+<h4 id="does-kudu-run-its-own-format-type-or-does-it-use-parquet-what-is-the-compression-recommendation">Does Kudu run its own format type or does it use Parquet? What is the compression recommendation?</h4>
+
+<p>Kudu’s on-disk data format closely resembles Parquet, with a few differences to
+support efficient random access as well as updates. The underlying data is not
+directly queryable without using the Kudu client APIs. The Kudu developers have worked
+hard to ensure that Kudu’s scan performance is performant, and has focused on
+storing data efficiently without making the trade-offs that would be required to
+allow direct access to the data files.</p>
+
+<p>The recommended compression codec is dependent on the appropriate trade-off
+between cpu utilization and storage efficiency and is therefore use-case dependent.</p>
+
+<h4 id="should-compactions-be-managed">Should compactions be managed?</h4>
+
+<p>Compactions in Kudu are designed to be small and to always be running in the
+background. They operate under a (configurable) budget to prevent tablet servers
+from unexpectedly attempting to rewrite tens of GB of data at a time. Since compactions
+are so predictable, the only tuning knob available is the number of threads dedicated
+to flushes and compactions in the <em>maintenance manager</em>.</p>
+
+<h4 id="what-is-the-compaction-performance-like">What is the compaction performance like?</h4>
+
+<p>Kudu runs a background compaction process that incrementally and constantly
+compacts data. Constant small compactions provide predictable latency by avoiding
+major compaction operations that could monopolize CPU and IO resources.</p>
+
+<h4 id="is-there-a-time-to-live-property-as-in-hbase-to-delete-a-record-automatically">Is there a time-to-live property as in HBase to delete a record automatically?</h4>
+
+<p>No, Kudu does not currently support such a feature.</p>
+
+<h4 id="do-the-tablet-servers-require-a-linux-filesystem-or-control-the-storage-devices-directly">Do the tablet servers require a Linux filesystem or control the storage devices directly?</h4>
+
+<p>The tablet servers store data on the Linux filesystem. We recommend ext4 or xfs
+mount points for the storage directories. Typically, a Kudu tablet server will
+share the same partitions as existing HDFS datanodes.</p>
+
+<h4 id="are-there-chances-of-region-server-hotspotting-like-with-hbase-and-how-does-kudu-mitigate-this">Are there chances of region server hotspotting like with HBase and how does Kudu mitigate this?</h4>
+
+<p>Hotspotting in HBase is an attribute inherited from the distribution strategy used.</p>
+
+<p>By default, HBase uses range based distribution. Range based partitioning stores
+ordered values that fit within a specified range of a provided key contiguously
+on disk. Range based partitioning is efficient when there are large numbers of
+concurrent small queries, as only servers in the cluster that have values within
+the range specified by the query will be recruited to process that query. Range
+partitioning is susceptible to hotspots, either because the key(s) used to
+specify the range exhibits “data skew” (the number of rows within each range
+is not uniform), or some data is queried more frequently creating “workload
+skew”.</p>
+
+<p>In contrast, hash based distribution specifies a certain number of “buckets”
+and distribution keys are passed to a hash function that produces the value of
+the bucket that the row is assigned to. If the distribution key is chosen
+carefully (a unique key with no business meaning is ideal) hash distribution
+will result in each server in the cluster having a uniform number of rows. Hash
+based distribution protects against both data skew and workload skew.
+Additionally, it provides the highest possible throughput for any individual
+query because all servers are recruited in parallel as data will be evenly
+spread across every server in the cluster. However, optimizing for throughput by
+recruiting every server in the cluster for every query comes compromises the
+maximum concurrency that the cluster can achieve. HBase can use hash based
+distribution by “salting” the row key.</p>
+
+<p>Kudu supports both approaches, giving you the ability choose to emphasize
+concurrency at the expense of potential data and workload skew with range
+partitioning, or query throughput at the expense of concurrency through hash
+partitioning.</p>
+
+<h4 id="does-kudu-support-dynamic-partitioning">Does Kudu support dynamic partitioning?</h4>
+
+<p>Kudu is a storage engine, not a SQL engine. Dynamic partitions are created at
+execution time rather than at query time, but in either case the process will
+look the same from Kudu’s perspective: the query engine will pass down
+partition keys to Kudu.</p>
+
+<h3 id="consistency-and-cap-theorem">Consistency and CAP Theorem</h3>
+
+<h4 id="what-is-kudus-consistency-model-is-kudu-a-cp-or-ap-system">What is Kudu’s consistency model? Is Kudu a CP or AP system?</h4>
+
+<p>In the parlance of the CAP theorem, Kudu is a
+<abbr title="consistent (but not available) under network partitions">CP</abbr>
+type of storage engine. Writing to a tablet will be delayed if the server that hosts that
+tablet’s leader replica fails until a quorum of servers is able to elect a new leader and
+acknowledge a given write request.</p>
+
+<p>Kudu gains the following properties by using Raft consensus:</p>
+
+<ul>
+  <li>Leader elections are fast. As soon as the leader misses 3 heartbeats (half a second each), the
+remaining followers will elect a new leader which will start accepting operations right away.
+This whole process usually takes less than 10 seconds.</li>
+  <li>Follower replicas don’t allow writes, but they do allow reads when fully up-to-date data is not
+required. Thus, queries against historical data (even just a few minutes old) can be
+sent to any of the replicas. If that replica fails, the query can be sent to another
+replica immediately.</li>
+</ul>
+
+<p>In current releases, some of these properties are not be fully implemented and
+may suffer from some deficiencies. See the answer to
+“<a href="#is-kudus-consistency-level-tunable">Is Kudu’s consistency level tunable?</a>”
+for more information.</p>
+
+<h4 id="is-kudus-consistency-level-tunable">Is Kudu’s consistency level tunable?</h4>
+
+<p>Yes, Kudu’s consistency level is partially tunable, both for writes and reads (scans):</p>
+
+<ul>
+  <li>Writes to a single tablet are always internally consistent. When writing to multiple tablets,
+with multiple clients, the user has a choice between no consistency (the default) and
+enforcing “external consistency” in two different ways: one that optimizes for latency
+requires the user to perform additional work and another that requires no additional
+work but can result in some additional latency.</li>
+  <li>Scans have “Read Committed” consistency by default. If the user requires strict-serializable
+scans it can choose the <code class="language-plaintext highlighter-rouge">READ_AT_SNAPSHOT</code> mode and, optionally, provide a timestamp. The default
+option is non-blocking but the <code class="language-plaintext highlighter-rouge">READ_AT_SNAPSHOT</code> option may block when reading from non-leader
+replicas.</li>
+</ul>
+
+<p>Kudu’s transactional semantics are a work in progress, see
+<a href="docs/transaction_semantics.html">Kudu Transaction Semantics</a> for
+further information and caveats.</p>
+
+<h4 id="how-does-kudu-handle-dirty-reads">How does Kudu handle dirty reads?</h4>
+
+<p>Neither “read committed” nor “READ_AT_SNAPSHOT” consistency modes permit dirty reads.</p>
+
+<h4 id="where-is-kudus-jepsen-report">Where is Kudu’s Jepsen report?</h4>
+
+<p>Kudu hasn’t been publicly tested with Jepsen but it is possible to run a set of tests following
+<a href="https://github.com/apache/kudu/blob/master/java/kudu-jepsen/README.adoc">these instructions</a>.</p>
+
+<h3 id="working-with-other-storage-systems">Working With Other Storage Systems</h3>
+
+<h4 id="can-data-be-loaded-directly-into-kudu-what-ingest-tools-can-be-used">Can data be loaded directly into Kudu? What ingest tools can be used?</h4>
+
+<p>Kudu provides direct access via Java and C++ APIs. An experimental Python API is
+also available and is expected to be fully supported in the future. The easiest
+way to load data into Kudu is to use a <code class="language-plaintext highlighter-rouge">CREATE TABLE ... AS SELECT * FROM ...</code>
+statement in Impala. Additionally, data is commonly ingested into Kudu using
+Spark, Nifi, and Flume.</p>
+
+<h4 id="whats-the-most-efficient-way-to-bulk-load-data-into-kudu">What’s the most efficient way to bulk load data into Kudu?</h4>
+
+<p>The easiest way to load data into Kudu is if the data is already managed by Impala.
+In this case, a simple <code class="language-plaintext highlighter-rouge">INSERT INTO TABLE some_kudu_table SELECT * FROM some_csv_table</code>
+does the trick.</p>
+
+<p>You can also use Kudu’s Spark integration to load data from or
+any other Spark compatible data store.</p>
+
+<p>No tool is provided to load data directly into Kudu’s on-disk data format. We
+have found that for many workloads, the insert performance of Kudu is comparable
+to bulk load performance of other systems.</p>
+
+<h4 id="what-kinds-of-data-can-kudu-store-can-it-accept-json">What kinds of data can Kudu store? Can it accept JSON?</h4>
+
+<p>Kudu uses typed storage and currently does not have a specific type for semi-
+structured data such as JSON. Semi-structured data can be stored in a STRING or
+BINARY column, but large values (10s of KB or more) are likely to cause
+performance or stability problems in current versions.</p>
+
+<p>Fuller support for semi-structured types like JSON and protobuf will be added in
+the future, contingent on demand.</p>
+
+<h4 id="is-there-a-jdbc-driver-available">Is there a JDBC driver available?</h4>
+
+<p>Kudu is not a SQL engine. The availability of JDBC and ODBC drivers will be
+dictated by the SQL engine used in combination with Kudu.</p>
+
+<h4 id="do-you-need-hadoop-to-run-kudu">Do you need Hadoop to run Kudu?</h4>
+
+<p>Kudu does not rely on any Hadoop components if it is accessed using its
+programmatic APIs. However, most usage of Kudu will include at least one Hadoop
+component such as MapReduce, Spark, or Impala. Components that have been
+modified to take advantage of Kudu storage, such as Impala, might have Hadoop
+dependencies.</p>
+
+<h4 id="what-is-the-relationship-between-kudu-and-hdfs-does-kudu-require-hdfs">What is the relationship between Kudu and HDFS? Does Kudu require HDFS?</h4>
+
+<p>Kudu is a separate storage system. It does not rely on or run on top of HDFS.
+Kudu can coexist with HDFS on the same cluster.</p>
+
+<h4 id="why-doesnt-kudu-store-its-data-in-hdfs">Why doesn’t Kudu store its data in HDFS?</h4>
+
+<p>We considered a design which stored data on HDFS, but decided to go in a different
+direction, for the following reasons:</p>
+
+<ul>
+  <li>Kudu handles replication at the logical level using Raft consensus, which makes
+HDFS replication redundant. We could have mandated a replication level of 1, but
+that is not HDFS’s best use case.</li>
+  <li>Filesystem-level snapshots provided by HDFS do not directly translate to Kudu support for
+snapshots, because it is hard to predict when a given piece of data will be flushed
+from memory. In addition, snapshots only make sense if they are provided on a per-table
+level, which would be difficult to orchestrate through a filesystem-level snapshot.</li>
+  <li>HDFS security doesn’t translate to table- or column-level ACLs. Similar to HBase
+ACLs, Kudu would need to implement its own security system and would not get much
+benefit from the HDFS security model.</li>
+  <li>Kudu’s scan performance is already within the same ballpark as Parquet files stored
+on HDFS, so there’s no need to accomodate reading Kudu’s data files directly.</li>
+</ul>
+
+<h4 id="what-frameworks-are-integrated-with-kudu-for-data-access">What frameworks are integrated with Kudu for data access?</h4>
+
+<p>Kudu is integrated with Impala, Spark, Nifi, MapReduce, and more. Additional
+frameworks are expected, with Hive being the current highest priority addition.</p>
+
+<h4 id="can-i-colocate-kudu-with-hdfs-on-the-same-servers">Can I colocate Kudu with HDFS on the same servers?</h4>
+
+<p>Kudu can be colocated with HDFS on the same data disk mount points. This is similar
+to colocating Hadoop and HBase workloads. Kudu has been extensively tested
+in this type of configuration, with no stability issues. For latency-sensitive workloads,
+consider dedicating an SSD to Kudu’s WAL files.</p>
+
+<h3 id="hardware-and-operations">Hardware and Operations</h3>
+
+<h4 id="what-are-kudus-runtime-dependencies">What are Kudu’s runtime dependencies?</h4>
+
+<p>Kudu itself doesn’t have any service dependencies and can run on a cluster without Hadoop,
+Impala, Spark, or any other project.</p>
+
+<p>If you want to use Impala, note that Impala depends on Hive’s metadata server, which has
+its own dependencies on Hadoop. It is not currently possible to have a pure Kudu+Impala
+deployment.</p>
+
+<h4 id="should-the-master-node-have-more-ram-than-worker-nodes">Should the master node have more RAM than worker nodes?</h4>
+
+<p>For small clusters with fewer than 100 nodes, with reasonable numbers of tables
+and tablets, the master node requires very little RAM, typically 1 GB or less.
+For workloads with large numbers of tables or tablets, more RAM will be
+required, but not more RAM than typical Hadoop worker nodes.</p>
+
+<h4 id="is-the-master-node-a-single-point-of-failure">Is the master node a single point of failure?</h4>
+
+<p>No. Kudu includes support for running multiple Master nodes, using the same Raft
+consensus algorithm that is used for durability of data.</p>
+
+<h4 id="does-kudu-require-the-use-of-ssds">Does Kudu require the use of SSDs?</h4>
+
+<p>No, SSDs are not a requirement of Kudu. Kudu is designed to take full advantage
+of fast storage and large amounts of memory if present, but neither is required.</p>
+
+<h4 id="can-a-kudu-deployment-be-geo-distributed">Can a Kudu deployment be geo-distributed?</h4>
+
+<p>We don’t recommend geo-distributing tablet servers this time because of the possibility
+of higher write latencies. In addition, Kudu is not currently aware of data placement.
+This could lead to a situation where the master might try to put all replicas
+in the same datacenter. We plan to implement the necessary features for geo-distribution
+in a future release.</p>
+
+<h4 id="where-is-the-kudu-shell">Where is the Kudu shell?</h4>
+
+<p>Kudu doesn’t yet have a command-line shell. If the Kudu-compatible version of Impala is
+installed on your cluster then you can use it as a replacement for a shell. See also the
+docs for the <a href="docs/kudu_impala_integration.html">Kudu Impala Integration</a>.</p>
+
+<h4 id="is-the-kudu-master-a-bottleneck">Is the Kudu Master a bottleneck?</h4>
+
+<p>Although the Master is not sharded, it is not expected to become a bottleneck for
+the following reasons.</p>
+
+<ul>
+  <li>Like many other systems, the master is not on the hot path once the tablet
+locations are cached.</li>
+  <li>The Kudu master process is extremely efficient at keeping everything in memory.
+In our testing on an 80-node cluster, the 99.99th percentile latency for getting
+tablet locations was on the order of hundreds of microseconds (not a typo).</li>
+</ul>
+
+<h4 id="what-operating-systems-does-kudu-support">What operating systems does Kudu support?</h4>
+
+<p>Linux is required to run Kudu. See the <a href="docs/installation.html#prerequisites_and_requirements">installation
+guide</a> for details. OSX
+is supported as a development platform in Kudu 0.6.0 and newer. The Java client
+can be used on any JVM 7+ platform.</p>
+
+<h4 id="what-linux-based-operating-systems-are-known-not-to-work-with-kudu">What Linux-based operating systems are known NOT to work with Kudu?</h4>
+
+<p><strong>RHEL 5</strong>: the kernel is missing critical features for handling disk space
+reclamation (such as hole punching), and it is not possible to run applications
+which use C++11 language features.</p>
+
+<p><strong>Debian 7</strong>: ships with gcc 4.7.2 which produces broken Kudu optimized code,
+and there is insufficient support for applications which use C++11 language
+features.</p>
+
+<p><strong>SLES 11</strong>: it is not possible to run applications which use C++11 language
+features.</p>
+
+<h4 id="how-can-i-back-up-my-kudu-data">How can I back up my Kudu data?</h4>
+
+<p>As of Kudu 1.10.0, Kudu supports both full and incremental table backups via a
+job implemented using Apache Spark. Additionally it supports restoring tables
+from full and incremental backups via a restore job implemented using Apache Spark.
+See the <a href="docs/administration.html">administration documentation</a> for details.</p>
+
+<p>For older versions which do not have a built-in backup mechanism, Impala can
+help if you have it available. You can use it to copy your data into Parquet
+format using a statement like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>INSERT INTO TABLE some_parquet_table SELECT * FROM kudu_table
+</code></pre></div></div>
+
+<p>then use <a href="http://hadoop.apache.org/docs/current/hadoop-distcp/DistCp.html">distcp</a>
+to copy the Parquet data to another cluster.</p>
+
+<h4 id="can-the-wal-transaction-logs-be-used-to-build-a-disaster-recovery-site">Can the WAL transaction logs be used to build a disaster recovery site?</h4>
+
+<p>Currently, Kudu does not support any mechanism for shipping or replaying WALs
+between sites.</p>
+
+<h4 id="is-there-a-single-wal-per-tablet-or-per-table">Is there a single WAL per tablet or per table?</h4>
+
+<p>There is one WAL per tablet.</p>
+
+<h3 id="security">Security</h3>
+
+<h4 id="how-is-security-handled-in-kudu">How is security handled in Kudu?</h4>
+
+<p>Kudu supports strong authentication and is designed to interoperate with other
+secure Hadoop components by utilizing Kerberos. It also supports coarse-grained
+authorization of client requests and TLS encryption of communication among
+servers and between clients and servers. To learn more, please refer to the
+<a href="https://kudu.apache.org/docs/security.html">security guide</a>.</p>
+
+<h3 id="schema-design">Schema Design</h3>
+
+<h4 id="can-kudu-tolerate-changing-schemas">Can Kudu tolerate changing schemas?</h4>
+
+<p>Yes, Kudu provides the ability to add, drop, and rename columns/tables.
+Currently it is not possible to change the type of a column in-place, though
+this is expected to be added to a subsequent Kudu release.</p>
+
+<h4 id="are-there-best-practices-in-terms-of-data-modeling">Are there best practices in terms of data modeling?</h4>
+
+<p>Kudu tables must have a unique primary key. Kudu has not been tested with
+columns containing large values (10s of KB and higher) and performance problems
+when using large values are anticipated. See
+<a href="http://kudu.apache.org/docs/schema_design.html">Schema Design</a>.</p>
+
+<h4 id="can-kudu-be-used-to-replace-lambda-architectures">Can Kudu be used to replace Lambda Architectures?</h4>
+
+<p>In many cases Kudu’s combination of real-time and analytic performance will
+allow the complexity inherent to Lambda architectures to be simplified through
+the use of a single storage engine.</p>
+
+<h4 id="is-there-a-way-to-force-the-order-of-execution-of-a-list-statement-ie-force-an-update-on-table-a-after-a-previous-insert-on-table-b">Is there a way to force the order of execution of a list statement? (ie force an update on table A after a previous insert on table B)?</h4>
+
+<p>When using the Kudu API, users can choose to perform synchronous operations.
+If a sequence of synchronous operations is made, Kudu guarantees that timestamps
+are assigned in a corresponding order.</p>
+
+<h4 id="should-i-use-kudu-for-oltp-type-workloads-how-does-kudu-relate-to-spanner-from-an-oltp-standpoint">Should I use Kudu for OLTP-type workloads? How does Kudu relate to Spanner from an OLTP standpoint?</h4>
+
+<p>Kudu is inspired by Spanner in that it uses a consensus-based replication design and
+timestamps for consistency control, but the on-disk layout is pretty different.</p>
+
+<p>Kudu was designed and optimized for OLAP workloads and lacks features such as multi-row
+transactions and secondary indexing typically needed to support OLTP.</p>
+
+<p>As a true column store, Kudu is not as efficient for OLTP as a row store would be. There are also
+currently some implementation issues that hurt Kudu’s performance on Zipfian distribution
+updates (see the YCSB results in the performance evaluation of our <a href="kudu.pdf">draft paper</a>.</p>
+
+<p>We anticipate that future releases will continue to improve performance for these workloads,
+but Kudu is not designed to be a full replacement for OLTP stores for all workloads. Please
+consider other storage engines such as Apache HBase or a traditional RDBMS.</p>
+
+<h3 id="indexes">Indexes</h3>
+
+<h4 id="can-multi-column-indexes-be-created">Can multi-column indexes be created?</h4>
+
+<p>Kudu supports compound primary keys. Secondary indexes, compound or not, are not
+currently supported.</p>
+
+<h4 id="does-kudu-support-secondary-indexes">Does Kudu support secondary indexes?</h4>
+
+<p>No, Kudu does not support secondary indexes. Random access is only possible through the
+primary key. For analytic drill-down queries, Kudu has very fast single-column scans which
+allow it to produce sub-second results when querying across billions of rows on small
+clusters.</p>
+
+<h4 id="are-index-updates-maintained-automatically">Are index updates maintained automatically?</h4>
+
+<p>Kudu’s primary key is automatically maintained. Secondary indexes, manually or
+automatically maintained, are not currently supported.</p>
+
+<h4 id="is-there-a-concept-like-partitioning-keys-like-with-cassandra-primary-and-secondary-index-concepts">Is there a concept like partitioning keys like with Cassandra (primary and secondary index concepts)?</h4>
+
+<p>Kudu’s primary key can be either simple (a single column) or compound
+(multiple columns). Within any tablet, rows are written in the sort order of the
+primary key. In the case of a compound key, sorting is determined by the order
+that the columns in the key are declared. For hash-based distribution, a hash of
+the entire key is used to determine the “bucket” that values will be placed in.</p>
+
+<p>With either type of partitioning, it is possible to partition based on only a
+subset of the primary key column. For example, a primary key of “(host, timestamp)”
+could be range-partitioned on only the timestamp column.</p>
+
+<h4 id="does-kudu-have-relational-features-like-autoincrement-column-pkfk-constraints-or-built-in-indexes">Does Kudu have relational features like autoincrement column, PK/FK constraints, or built-in indexes?</h4>
+
+<p>Kudu tables have a primary key that is used for uniqueness as well as providing
+quick access to individual rows. Kudu supports auto-incrementing columns, however auto-incrementing
+columns are system generated and users can’t create a table with auto-incrementing column explicitly.
+Columns which don’t fulfill the uniqueness constraint can be used to create
+<a href="http://kudu.apache.org/docs/schema_design.html#non-unique_primary_keys">non-unique primary keys</a>.
+Foreign key constraints, and secondary indexes are not currently supported, but
+could be added in subsequent Kudu releases.</p>
+
+<h3 id="transactions">Transactions</h3>
+
+<h4 id="does-kudu-support-multi-row-transactions">Does Kudu support multi-row transactions?</h4>
+
+<p>No, Kudu does not support multi-row transactions at this time. However, single row
+operations are atomic within that row.</p>
+
+<h4 id="does-kudu-offer-acid-compliance">Does Kudu offer ACID compliance?</h4>
+
+<p>Kudu is designed to eventually be fully ACID compliant. However, multi-row
+transactions are not yet implemented. The single-row transaction guarantees it
+currently provides are very similar to HBase.</p>
+
+<h4 id="is-a-rollback-concept-supported">Is a rollback concept supported?</h4>
+
+<p>Kudu does not currently support transaction rollback.</p>
+
+
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

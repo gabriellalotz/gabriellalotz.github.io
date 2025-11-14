@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Developing Applications With Apache Kudu</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li class="active">
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li >
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-9">
+
+<h1>Developing Applications With Apache Kudu</h1>
+      <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu provides C++, Java and Python client APIs, as well as reference examples to illustrate
+their use.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Use of server-side or private interfaces is not supported, and interfaces
+which are not part of public APIs have no stability guarantees.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_viewing_the_api_documentation"><a class="link" href="#_viewing_the_api_documentation">Viewing the API Documentation</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<div class="title">C++ API Documentation</div>
+<p>You can view the <a href="../cpp-client-api/index.html">C++ client API documentation</a>
+online. Alternatively, after <a href="#build_from_source">building Kudu from source</a>,
+you can additionally build the <code>doxygen</code> target (e.g., run <code>make doxygen</code>
+if using make) and use the locally generated API documentation by opening
+<code>docs/doxygen/client_api/html/index.html</code> file in your favorite Web browser.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+In order to build the <code>doxygen</code> target, it&#8217;s necessary to have
+doxygen with Dot (graphviz) support installed at your build machine. If
+you installed doxygen after building Kudu from source, you will need to run
+<code>cmake</code> again to pick up the doxygen location and generate appropriate
+targets.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<div class="title">Java API Documentation</div>
+<p>You can view the <a href="../apidocs/index.html">Java API documentation</a> online. Alternatively,
+after <a href="#build_java_client">building the Java client</a>, Java API documentation is available
+in <code>java/kudu-client/target/apidocs/index.html</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_working_examples"><a class="link" href="#_working_examples">Working Examples</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Several example applications are provided in the
+<a href="https://github.com/cloudera/kudu-examples">kudu-examples</a> Github
+repository. Each example includes a <code>README</code> that shows how to compile and run
+it. These examples illustrate correct usage of the Kudu APIs, as well as how to
+set up a virtual machine to run Kudu. The following list includes some of the
+examples that are available today. Check the repository itself in case this list goes
+out of date.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>java/java-example</code></dt>
+<dd>
+<p>A simple Java application which connects to a Kudu instance, creates a table, writes data to it, then drops the table.</p>
+</dd>
+<dt class="hdlist1"><code>java/collectl</code></dt>
+<dd>
+<p>A small Java application which listens on a TCP socket for time series data corresponding to the Collectl wire protocol.
+The commonly-available collectl tool can be used to send example data to the server.</p>
+</dd>
+<dt class="hdlist1"><code>java/insert-loadgen</code></dt>
+<dd>
+<p>A Java application that generates random insert load.</p>
+</dd>
+<dt class="hdlist1"><code>python/dstat-kudu</code></dt>
+<dd>
+<p>An example program that shows how to use the Kudu Python API to load data into a new / existing Kudu table
+generated by an external program, <code>dstat</code> in this case.</p>
+</dd>
+<dt class="hdlist1"><code>python/graphite-kudu</code></dt>
+<dd>
+<p>An experimental plugin for using graphite-web with Kudu as a backend.</p>
+</dd>
+<dt class="hdlist1"><code>demo-vm-setup</code></dt>
+<dd>
+<p>Scripts to download and run a VirtualBox virtual machine with Kudu already installed.
+See <a href="quickstart.html">Quickstart</a> for more information.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>These examples should serve as helpful starting points for your own Kudu applications and integrations.</p>
+</div>
+<div class="sect2">
+<h3 id="_maven_artifacts"><a class="link" href="#_maven_artifacts">Maven Artifacts</a></h3>
+<div class="paragraph">
+<p>The following Maven <code>&lt;dependency&gt;</code> element is valid for the Apache Kudu public release
+(since 1.0.0):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;org.apache.kudu&lt;/groupId&gt;
+  &lt;artifactId&gt;kudu-client&lt;/artifactId&gt;
+  &lt;version&gt;1.1.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Convenience binary artifacts for the Java client and various Java integrations (e.g. Spark, Flume)
+are also now available via the <a href="http://repository.apache.org">ASF Maven repository</a> and
+<a href="https://mvnrepository.com/artifact/org.apache.kudu">Maven Central repository</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_example_impala_commands_with_kudu"><a class="link" href="#_example_impala_commands_with_kudu">Example Impala Commands With Kudu</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>See <a href="kudu_impala_integration.html">Using Impala With Kudu</a> for guidance on installing
+and using Impala with Kudu, including several <code>impala-shell</code> examples.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kudu_integration_with_spark"><a class="link" href="#_kudu_integration_with_spark">Kudu Integration with Spark</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu integrates with Spark through the Data Source API as of version 1.0.0.
+Include the kudu-spark dependency using the --packages option:</p>
+</div>
+<div class="paragraph">
+<p>Use the kudu-spark_2.10 artifact if using Spark with Scala 2.10</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>spark-shell --packages org.apache.kudu:kudu-spark_2.10:1.1.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use kudu-spark2_2.11 artifact if using Spark 2 with Scala 2.11</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>spark-shell --packages org.apache.kudu:kudu-spark2_2.11:1.1.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then import kudu-spark and create a dataframe:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">import org.apache.kudu.spark.kudu._
+import org.apache.kudu.client._
+import collection.JavaConverters._
+
+// Read a table from Kudu
+val df = sqlContext.read.options(Map("kudu.master" -&gt; "kudu.master:7051","kudu.table" -&gt; "kudu_table")).kudu
+
+// Query using the Spark API...
+df.select("id").filter("id" &gt;= 5).show()
+
+// ...or register a temporary table and use SQL
+df.registerTempTable("kudu_table")
+val filteredDF = sqlContext.sql("select id from kudu_table where id &gt;= 5").show()
+
+// Use KuduContext to create, delete, or write to Kudu tables
+val kuduContext = new KuduContext("kudu.master:7051")
+
+// Create a new Kudu table from a dataframe schema
+// NB: No rows from the dataframe are inserted into the table
+kuduContext.createTable(
+    "test_table", df.schema, Seq("key"),
+    new CreateTableOptions()
+        .setNumReplicas(1)
+        .addHashPartitions(List("key").asJava, 3))
+
+// Insert data
+kuduContext.insertRows(df, "test_table")
+
+// Delete data
+kuduContext.deleteRows(filteredDF, "test_table")
+
+// Upsert data
+kuduContext.upsertRows(df, "test_table")
+
+// Update data
+val alteredDF = df.select("id", $"count" + 1)
+kuduContext.updateRows(filteredRows, "test_table"
+
+// Data can also be inserted into the Kudu table using the data source, though the methods on KuduContext are preferred
+// NB: The default is to upsert rows; to perform standard inserts instead, set operation = insert in the options map
+// NB: Only mode Append is supported
+df.write.options(Map("kudu.master"-&gt; "kudu.master:7051", "kudu.table"-&gt; "test_table")).mode("append").kudu
+
+// Check for the existence of a Kudu table
+kuduContext.tableExists("another_table")
+
+// Delete a Kudu table
+kuduContext.deleteTable("unwanted_table")</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spark_integration_known_issues_and_limitations"><a class="link" href="#_spark_integration_known_issues_and_limitations">Spark Integration Known Issues and Limitations</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Kudu tables with a name containing upper case or non-ascii characters must be
+assigned an alternate name when registered as a temporary table.</p>
+</li>
+<li>
+<p>Kudu tables with a column name containing upper case or non-ascii characters
+may not be used with SparkSQL. Non-primary key columns may be renamed in Kudu
+to work around this issue.</p>
+</li>
+<li>
+<p><code>NULL</code>, <code>NOT NULL</code>, <code>&lt;&gt;</code>, <code>OR</code>, <code>LIKE</code>, and <code>IN</code> predicates are not pushed to
+Kudu, and instead will be evaluated by the Spark task.</p>
+</li>
+<li>
+<p>Kudu does not support all types supported by Spark SQL, such as <code>Date</code>,
+<code>Decimal</code> and complex types.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kudu_python_client"><a class="link" href="#_kudu_python_client">Kudu Python Client</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Kudu Python client provides a Python friendly interface to the C++ client API.
+The sample below demonstrates the use of part of the Python client.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-python" data-lang="python">import kudu
+from kudu.client import Partitioning
+from datetime import datetime
+
+# Connect to Kudu master server
+client = kudu.connect(host='kudu.master', port=7051)
+
+# Define a schema for a new table
+builder = kudu.schema_builder()
+builder.add_column('key').type(kudu.int64).nullable(False).primary_key()
+builder.add_column('ts_val', type_=kudu.unixtime_micros, nullable=False, compression='lz4')
+schema = builder.build()
+
+# Define partitioning schema
+partitioning = Partitioning().add_hash_partitions(column_names=['key'], num_buckets=3)
+
+# Create new table
+client.create_table('python-example', schema, partitioning)
+
+# Open a table
+table = client.table('python-example')
+
+# Create a new session so that we can apply write operations
+session = client.new_session()
+
+# Insert a row
+op = table.new_insert({'key': 1, 'ts_val': datetime.utcnow()})
+session.apply(op)
+
+# Upsert a row
+op = table.new_upsert({'key': 2, 'ts_val': "2016-01-01T00:00:00.000000"})
+session.apply(op)
+
+# Updating a row
+op = table.new_update({'key': 1, 'ts_val': ("2017-01-01", "%Y-%m-%d")})
+session.apply(op)
+
+# Delete a row
+op = table.new_delete({'key': 2})
+session.apply(op)
+
+# Flush write operations, if failures occur, capture print them.
+try:
+    session.flush()
+except kudu.KuduBadStatus as e:
+    print(session.get_pending_errors())
+
+# Create a scanner and add a predicate
+scanner = table.scanner()
+scanner.add_predicate(table['ts_val'] == datetime(2017, 1, 1))
+
+# Open Scanner and read all tuples
+# Note: This doesn't scale for large scans
+result = scanner.open().read_all_tuples()</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_integration_with_mapreduce_yarn_and_other_frameworks"><a class="link" href="#_integration_with_mapreduce_yarn_and_other_frameworks">Integration with MapReduce, YARN, and Other Frameworks</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kudu was designed to integrate with MapReduce, YARN, Spark, and other frameworks in
+the Hadoop ecosystem. See
+<a href="https://github.com/apache/kudu/blob/master/java/kudu-client-tools/src/main/java/org/apache/kudu/mapreduce/tools/RowCounter.java">RowCounter.java</a>
+and
+<a href="https://github.com/apache/kudu/blob/master/java/kudu-client-tools/src/main/java/org/apache/kudu/mapreduce/tools/ImportCsv.java">ImportCsv.java</a>
+for examples which you can model your own integrations on. Stay tuned for more examples
+using YARN and Spark in the future.</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="col-md-3">
+
+  <div id="toc" data-spy="affix" data-offset-top="70">
+  <ul>
+
+      <li>
+
+          <a href="index.html">Introducing Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="release_notes.html">Kudu Release Notes</a> 
+      </li> 
+      <li>
+
+          <a href="quickstart.html">Getting Started with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="installation.html">Installation Guide</a> 
+      </li> 
+      <li>
+
+          <a href="configuration.html">Configuring Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="kudu_impala_integration.html">Using Impala with Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="administration.html">Administering Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="troubleshooting.html">Troubleshooting Kudu</a> 
+      </li> 
+      <li>
+<span class="active-toc">Developing Applications with Kudu</span>
+            <ul class="sectlevel1">
+<li><a href="#_viewing_the_api_documentation">Viewing the API Documentation</a></li>
+<li><a href="#_working_examples">Working Examples</a>
+<ul class="sectlevel2">
+<li><a href="#_maven_artifacts">Maven Artifacts</a></li>
+</ul>
+</li>
+<li><a href="#_example_impala_commands_with_kudu">Example Impala Commands With Kudu</a></li>
+<li><a href="#_kudu_integration_with_spark">Kudu Integration with Spark</a>
+<ul class="sectlevel2">
+<li><a href="#_spark_integration_known_issues_and_limitations">Spark Integration Known Issues and Limitations</a></li>
+</ul>
+</li>
+<li><a href="#_kudu_python_client">Kudu Python Client</a></li>
+<li><a href="#_integration_with_mapreduce_yarn_and_other_frameworks">Integration with MapReduce, YARN, and Other Frameworks</a></li>
+</ul> 
+      </li> 
+      <li>
+
+          <a href="schema_design.html">Kudu Schema Design</a> 
+      </li> 
+      <li>
+
+          <a href="transaction_semantics.html">Kudu Transaction Semantics</a> 
+      </li> 
+      <li>
+
+          <a href="contributing.html">Contributing to Kudu</a> 
+      </li> 
+      <li>
+
+          <a href="style_guide.html">Kudu Documentation Style Guide</a> 
+      </li> 
+      <li>
+
+          <a href="configuration_reference.html">Kudu Configuration Reference</a> 
+      </li> 
+      <li>
+
+          <a href="known_issues.html">Known Issues and Limitations</a> 
+      </li> 
+      <li>
+
+          <a href="export_control.html">Export Control Notice</a> 
+      </li> 
+  </ul>
+  </div>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation.  Last updated 2017-03-01 12:43:33 PST 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

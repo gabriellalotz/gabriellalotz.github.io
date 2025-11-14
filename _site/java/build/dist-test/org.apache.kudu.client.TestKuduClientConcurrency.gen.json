@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "dir": "/apache/dev/git/kudu/java/build/dist-test",
+  "args": [
+    "-i",
+    "/apache/dev/git/kudu/java/build/dist-test/org.apache.kudu.client.TestKuduClientConcurrency.isolate",
+    "-s",
+    "/apache/dev/git/kudu/java/build/dist-test/org.apache.kudu.client.TestKuduClientConcurrency.isolated"
+  ],
+  "name": "org.apache.kudu.client.TestKuduClientConcurrency"
+}

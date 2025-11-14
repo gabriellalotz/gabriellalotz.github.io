@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Index Skip Scan Optimization in Kudu</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Index Skip Scan Optimization in Kudu</h1>
+    <p class="meta">Posted 26 Sep 2018 by Anupama Gupta</p>
+  </header>
+  <div class="entry-content">
+    <p>This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
+My project was to optimize the Kudu scan path by implementing a technique called
+index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
+my experience and the progress we’ve made so far on the approach.</p>
+
+<!--more-->
+
+<p>Let’s begin with discussing the current query flow in Kudu.
+Consider the following table:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">metrics</span> <span class="p">(</span>
+    <span class="k">host</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">tstamp</span> <span class="nb">INT</span><span class="p">,</span>
+    <span class="n">clusterid</span> <span class="nb">INT</span><span class="p">,</span>
+    <span class="k">role</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="k">host</span><span class="p">,</span> <span class="n">tstamp</span><span class="p">,</span> <span class="n">clusterid</span><span class="p">)</span>
+<span class="p">);</span></code></pre></figure>
+
+<p><img src="/img/index-skip-scan/example-table.png" alt="png" class="img-responsive" />
+<em>Sample rows of table <code class="language-plaintext highlighter-rouge">metrics</code> (sorted by key columns).</em></p>
+
+<p>In this case, by default, Kudu internally builds a primary key index (implemented as a
+<a href="https://en.wikipedia.org/wiki/B-tree">B-tree</a>) for the table <code class="language-plaintext highlighter-rouge">metrics</code>.
+As shown in the table above, the index data is sorted by the composite of all key columns.
+When the user query contains the first key column (<code class="language-plaintext highlighter-rouge">host</code>), Kudu uses the index (as the index data is
+primarily sorted on the first key column).</p>
+
+<p>Now, what if the user query does not contain the first key column and instead only contains the <code class="language-plaintext highlighter-rouge">tstamp</code> column?
+In the above case, the <code class="language-plaintext highlighter-rouge">tstamp</code> column values are sorted with respect to <code class="language-plaintext highlighter-rouge">host</code>,
+but are not globally sorted, and as such, it’s non-trivial to use the index to filter rows.
+Instead, a full tablet scan is done by default. Other databases may optimize such scans by building secondary indexes
+(though it might be redundant to build one on one of the primary keys). However, this isn’t an option for Kudu,
+given its lack of secondary index support.</p>
+
+<p>The question is, can Kudu do better than a full tablet scan here?</p>
+
+<p>The answer is yes! Let’s observe the column preceding the <code class="language-plaintext highlighter-rouge">tstamp</code> column. We will refer to it as the
+“prefix column” and its specific value as the “prefix key”. In this example, <code class="language-plaintext highlighter-rouge">host</code> is the prefix column.
+Note that the prefix keys are sorted in the index and that all rows of a given prefix key are also sorted by the
+remaining key columns. Therefore, we can use the index to skip to the rows that have distinct prefix keys,
+and also satisfy the predicate on the <code class="language-plaintext highlighter-rouge">tstamp</code> column.
+For example, consider the query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">clusterid</span> <span class="k">FROM</span> <span class="n">metrics</span> <span class="k">WHERE</span> <span class="n">tstamp</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span></code></pre></figure>
+
+<p><img src="/img/index-skip-scan/skip-scan-example-table.png" alt="png" class="img-responsive" />
+<em>Skip scan flow illustration. The rows in green are scanned and the rest are skipped.</em></p>
+
+<p>The tablet server can use the index to <strong>skip</strong> to the first row with a distinct prefix key (<code class="language-plaintext highlighter-rouge">host = helium</code>) that
+matches the predicate (<code class="language-plaintext highlighter-rouge">tstamp = 100</code>) and then <strong>scan</strong> through the rows until the predicate no longer matches. At that
+point we would know that no more rows with <code class="language-plaintext highlighter-rouge">host = helium</code> will satisfy the predicate, and we can skip to the next
+prefix key. This holds true for all distinct keys of <code class="language-plaintext highlighter-rouge">host</code>. Hence, this method is popularly known as
+<strong>skip scan optimization</strong>[2, 3].</p>
+
+<h1 id="performance">Performance</h1>
+
+<p>This optimization can speed up queries significantly, depending on the cardinality (number of distinct values) of the
+prefix column. The lower the prefix column cardinality, the better the skip scan performance. In fact, when the
+prefix column cardinality is high, skip scan is not a viable approach. The performance graph (obtained using the example
+schema and query pattern mentioned earlier) is shown below.</p>
+
+<p>Based on our experiments, on up to 10 million rows per tablet (as shown below), we found that the skip scan performance
+begins to get worse with respect to the full tablet scan performance when the prefix column cardinality
+exceeds sqrt(number_of_rows_in_tablet).
+Therefore, in order to use skip scan performance benefits when possible and maintain a consistent performance in cases
+of large prefix column cardinality, we have tentatively chosen to dynamically disable skip scan when the number of skips for
+distinct prefix keys exceeds sqrt(number_of_rows_in_tablet).
+It will be an interesting project to further explore sophisticated heuristics to decide when
+to dynamically disable skip scan.</p>
+
+<p><img src="/img/index-skip-scan/skip-scan-performance-graph.png" alt="png" class="img-responsive" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Skip scan optimization in Kudu can lead to huge performance benefits that scale with the size of
+data in Kudu tablets. This is a work-in-progress <a href="https://gerrit.cloudera.org/#/c/10983/">patch</a>.
+The implementation in the patch works only for equality predicates on the non-first primary key
+columns. An important point to note is that although, in the above specific example, the number of prefix
+columns is one (<code class="language-plaintext highlighter-rouge">host</code>), this approach is generalized to work with any number of prefix columns.</p>
+
+<p>This work also lays the groundwork to leverage the skip scan approach and optimize query processing time in the
+following use cases:</p>
+
+<ul>
+  <li>Range predicates</li>
+  <li>In-list predicates</li>
+</ul>
+
+<p>This was my first time working on an open source project. I thoroughly enjoyed working on this challenging problem,
+right from understanding the scan path in Kudu to working on a full-fledged implementation of
+the skip scan optimization. I am very grateful to the Kudu team for guiding and supporting me throughout the
+internship period.</p>
+
+<h1 id="references">References</h1>
+
+<p><a href="https://storage.googleapis.com/pub-tools-public-publication-data/pdf/42851.pdf">[1]</a>: Gupta, Ashish, et al. “Mesa:
+Geo-replicated, near real-time, scalable data warehousing.” Proceedings of the VLDB Endowment 7.12 (2014): 1259-1270.</p>
+
+<p><a href="https://oracle-base.com/articles/9i/index-skip-scanning/">[2]</a>: Index Skip Scanning - Oracle Database</p>
+
+<p><a href="https://www.sqlite.org/optoverview.html#skipscan">[3]</a>: Skip Scan - SQLite</p>
+
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2025/11/10/introducing-the-rest-api.html">Introducing REST API for metadata management to Apache Kudu</a> </li>
+    
+      <li> <a href="/2025/07/10/apache-kudu-1-18-0-release.html">Apache Kudu 1.18.0 Released</a> </li>
+    
+      <li> <a href="/2025/05/13/introducing-the-externalized-kudu-connector.html">Introducing the Externalized Kudu Connector</a> </li>
+    
+      <li> <a href="/2024/11/13/apache-kudu-1-17-1-release.html">Apache Kudu 1.17.1 Released</a> </li>
+    
+      <li> <a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a> </li>
+    
+      <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
+    
+      <li> <a href="/2022/06/17/apache-kudu-1-16-0-released.html">Apache Kudu 1.16.0 Released</a> </li>
+    
+      <li> <a href="/2021/06/22/apache-kudu-1-15-0-released.html">Apache Kudu 1.15.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/28/apache-kudu-1-14-0-release.html">Apache Kudu 1.14.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Apache Kudu Weekly Update August 16th, 2016</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Apache Kudu Weekly Update August 16th, 2016</h1>
+    <p class="meta">Posted 16 Aug 2016 by Todd Lipcon</p>
+  </header>
+  <div class="entry-content">
+    <p>Welcome to the twentieth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</p>
+
+<!--more-->
+
+<h2 id="project-news">Project news</h2>
+
+<ul>
+  <li>
+    <p>The first release candidate for the 0.10.0 is <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201608.mbox/%3CCADY20s7U5jVpozFg3L%3DDz2%2B4AenGineJvH96A_HAM12biDjPJA%40mail.gmail.com%3E">now available</a></p>
+
+    <p>Community developers and users are encouraged to download the source
+tarball and vote on the release.</p>
+
+    <p>For information on what’s new, check out the
+<a href="https://github.com/apache/kudu/blob/master/docs/release_notes.adoc#rn_0.10.0">release notes</a>.
+<em>Note:</em> some links from these in-progress release notes will not be live until the
+release itself is published.</p>
+  </li>
+</ul>
+
+<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
+
+<ul>
+  <li>
+    <p>Will Berkeley spent some time working on the Spark integration this week
+to add support for UPSERT as well as other operations.
+Dan Burkert pitched in a bit with some <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201608.mbox/%3CCALo2W-XBoSz9cbhXi81ipubrAYgqyDiEeHz-ys8sPAshfcik6w%40mail.gmail.com%3E">suggestions</a>
+which were then integrated in a <a href="https://gerrit.cloudera.org/#/c/3871/">patch</a>
+provided by Will.</p>
+
+    <p>After some reviews by Dan, Chris George, and Ram Mettu, the patch was committed
+in time for the upcoming 0.10.0 release.</p>
+  </li>
+  <li>
+    <p>Dan Burkert also completed work for the new <a href="https://gerrit.cloudera.org/#/c/3854/">manual partitioning APIs</a>
+in the Java client. After finishing up the basic implementation, Dan also made some
+cleanups to the related APIs in both the <a href="https://gerrit.cloudera.org/#/c/3958/">Java</a>
+and <a href="https://gerrit.cloudera.org/#/c/3882/">C++</a> clients.</p>
+
+    <p>Dan and Misty Stanley-Jones also collaborated to finish the
+<a href="https://gerrit.cloudera.org/#/c/3796/">documentation</a>
+for this new feature.</p>
+  </li>
+  <li>
+    <p>Adar Dembo worked on some tooling to allow users to migrate their Kudu clusters
+from a single-master configuration to a multi-master one. Along the way, he
+started building some common infrastructure for command-line tooling.</p>
+
+    <p>Since Kudu’s initial release, it has included separate binaries for different
+administrative or operational tools (e.g. <code class="language-plaintext highlighter-rouge">kudu-ts-cli</code>, <code class="language-plaintext highlighter-rouge">kudu-ksck</code>, <code class="language-plaintext highlighter-rouge">kudu-fs_dump</code>,
+<code class="language-plaintext highlighter-rouge">log-dump</code>, etc). Despite having similar usage, these tools don’t share much code,
+and the separate statically linked binaries make the Kudu packages take more disk
+space than strictly necessary.</p>
+
+    <p>Adar’s work has introduced a new top-level <code class="language-plaintext highlighter-rouge">kudu</code> binary which exposes a set of subcommands,
+much like the <code class="language-plaintext highlighter-rouge">git</code> and <code class="language-plaintext highlighter-rouge">docker</code> binaries with which readers may be familiar.
+For example, a new tool he has built for dumping peer identifiers from a tablet’s
+consensus metadata is triggered using <code class="language-plaintext highlighter-rouge">kudu tablet cmeta print_replica_uuids</code>.</p>
+
+    <p>This new tool will be available in the upcoming 0.10.0 release; however, migration
+of the existing tools to the new infrastructure has not yet been completed. We
+expect that by Kudu 1.0, the old tools will be removed in favor of more subcommands
+of the <code class="language-plaintext highlighter-rouge">kudu</code> tool.</p>
+  </li>
+  <li>
+    <p>Todd Lipcon picked up the work started by David Alves in July to provide
+<a href="https://gerrit.cloudera.org/#/c/2642/">“exactly-once” semantics</a> for write operations.
+Todd carried the patch series through review and also completed integration of the
+feature into the Kudu server processes.</p>
+
+    <p>After testing the feature for several days on a large cluster under load,
+the team decided to enable this new feature by default in Kudu 0.10.0.</p>
+  </li>
+  <li>
+    <p>Mike Percy resumed working on garbage collection of <a href="https://gerrit.cloudera.org/#/c/2853/">past versions of
+updated and deleted rows</a>. His <a href="https://gerrit.cloudera.org/#/c/3076/">main
+patch for the feature</a> went through
+several rounds of review and testing, but unfortunately missed the cut-off
+for 0.10.0.</p>
+  </li>
+  <li>
+    <p>Alexey Serbin’s work to add doxygen-based documentation for the C++ Client API
+was <a href="https://gerrit.cloudera.org/#/c/3840/">committed</a> this week. These
+docs will be published as part of the 0.10.0 release.</p>
+  </li>
+  <li>
+    <p>Alexey also continued work on implementing the <code class="language-plaintext highlighter-rouge">AUTO_FLUSH_BACKGROUND</code> write
+mode for the C++ client. This feature makes it easier to implement high-throughput
+ingest using the C++ API by automatically handling the batching and flushing of writes
+based on a configurable buffer size.</p>
+
+    <p>Alexey’s <a href="https://gerrit.cloudera.org/#/c/3952/">patch</a> has received several
+rounds of review and looks likely to be committed soon. Detailed performance testing
+will follow.</p>
+  </li>
+  <li>
+    <p>Congratulations to Ram Mettu for committing his first patch to Kudu this week!
+Ram fixed a <a href="https://issues.apache.org/jira/browse/KUDU-1522">bug in handling Alter Table with TIMESTAMP columns</a>.</p>
+  </li>
+</ul>
+
+<h2 id="upcoming-talks">Upcoming talks</h2>
+
+<ul>
+  <li>Mike Percy will be speaking about Kudu this Wednesday at the
+<a href="http://www.meetup.com/Denver-Cloudera-User-Group/events/232782782/">Denver Cloudera User Group</a>
+and on Thursday at the
+<a href="http://www.meetup.com/Boulder-Denver-Big-Data/events/232056701/">Boulder/Denver Big Data Meetup</a>.
+If you’re based in the Boulder/Denver area, be sure not to miss these talks!</li>
+</ul>
+
+<p>Want to learn more about a specific topic from this blog post? Shoot an email to the
+<a href="mailto:user@kudu.apache.org">kudu-user mailing list</a> or
+tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.</p>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2025/11/10/introducing-the-rest-api.html">Introducing REST API for metadata management to Apache Kudu</a> </li>
+    
+      <li> <a href="/2025/07/10/apache-kudu-1-18-0-release.html">Apache Kudu 1.18.0 Released</a> </li>
+    
+      <li> <a href="/2025/05/13/introducing-the-externalized-kudu-connector.html">Introducing the Externalized Kudu Connector</a> </li>
+    
+      <li> <a href="/2024/11/13/apache-kudu-1-17-1-release.html">Apache Kudu 1.17.1 Released</a> </li>
+    
+      <li> <a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a> </li>
+    
+      <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
+    
+      <li> <a href="/2022/06/17/apache-kudu-1-16-0-released.html">Apache Kudu 1.16.0 Released</a> </li>
+    
+      <li> <a href="/2021/06/22/apache-kudu-1-15-0-released.html">Apache Kudu 1.15.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/28/apache-kudu-1-14-0-release.html">Apache Kudu 1.14.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2025 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+
