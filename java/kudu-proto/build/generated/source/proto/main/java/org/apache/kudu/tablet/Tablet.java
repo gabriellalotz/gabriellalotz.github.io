@@ -5481,6 +5481,38 @@ public final class Tablet {
      * @return The dataDirs at the given index.
      */
     com.google.protobuf.ByteString getDataDirs(int index);
+
+    /**
+     * <pre>
+     * The table ID that this tablet belongs to. Used by master rebuilder
+     * to preserve original table IDs when rebuilding the syscatalog.
+     * </pre>
+     *
+     * <code>optional string table_id = 11;</code>
+     * @return Whether the tableId field is set.
+     */
+    boolean hasTableId();
+    /**
+     * <pre>
+     * The table ID that this tablet belongs to. Used by master rebuilder
+     * to preserve original table IDs when rebuilding the syscatalog.
+     * </pre>
+     *
+     * <code>optional string table_id = 11;</code>
+     * @return The tableId.
+     */
+    java.lang.String getTableId();
+    /**
+     * <pre>
+     * The table ID that this tablet belongs to. Used by master rebuilder
+     * to preserve original table IDs when rebuilding the syscatalog.
+     * </pre>
+     *
+     * <code>optional string table_id = 11;</code>
+     * @return The bytes for tableId.
+     */
+    com.google.protobuf.ByteString
+        getTableIdBytes();
   }
   /**
    * Protobuf type {@code kudu.tablet.TabletStatusPB}
@@ -5503,6 +5535,7 @@ public final class Tablet {
       startKey_ = com.google.protobuf.ByteString.EMPTY;
       endKey_ = com.google.protobuf.ByteString.EMPTY;
       dataDirs_ = emptyList(com.google.protobuf.ByteString.class);
+      tableId_ = "";
     }
 
     @java.lang.Override
@@ -5837,6 +5870,70 @@ public final class Tablet {
       return dataDirs_.get(index);
     }
 
+    public static final int TABLE_ID_FIELD_NUMBER = 11;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object tableId_ = "";
+    /**
+     * <pre>
+     * The table ID that this tablet belongs to. Used by master rebuilder
+     * to preserve original table IDs when rebuilding the syscatalog.
+     * </pre>
+     *
+     * <code>optional string table_id = 11;</code>
+     * @return Whether the tableId field is set.
+     */
+    @java.lang.Override
+    public boolean hasTableId() {
+      return ((bitField0_ & 0x00000200) != 0);
+    }
+    /**
+     * <pre>
+     * The table ID that this tablet belongs to. Used by master rebuilder
+     * to preserve original table IDs when rebuilding the syscatalog.
+     * </pre>
+     *
+     * <code>optional string table_id = 11;</code>
+     * @return The tableId.
+     */
+    @java.lang.Override
+    public java.lang.String getTableId() {
+      java.lang.Object ref = tableId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          tableId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * The table ID that this tablet belongs to. Used by master rebuilder
+     * to preserve original table IDs when rebuilding the syscatalog.
+     * </pre>
+     *
+     * <code>optional string table_id = 11;</code>
+     * @return The bytes for tableId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getTableIdBytes() {
+      java.lang.Object ref = tableId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        tableId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -5893,6 +5990,9 @@ public final class Tablet {
       for (int i = 0; i < dataDirs_.size(); i++) {
         output.writeBytes(10, dataDirs_.get(i));
       }
+      if (((bitField0_ & 0x00000200) != 0)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, tableId_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -5943,6 +6043,9 @@ public final class Tablet {
         }
         size += dataSize;
         size += 1 * getDataDirsList().size();
+      }
+      if (((bitField0_ & 0x00000200) != 0)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, tableId_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -6004,6 +6107,11 @@ public final class Tablet {
       }
       if (!getDataDirsList()
           .equals(other.getDataDirsList())) return false;
+      if (hasTableId() != other.hasTableId()) return false;
+      if (hasTableId()) {
+        if (!getTableId()
+            .equals(other.getTableId())) return false;
+      }
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -6055,6 +6163,10 @@ public final class Tablet {
       if (getDataDirsCount() > 0) {
         hash = (37 * hash) + DATA_DIRS_FIELD_NUMBER;
         hash = (53 * hash) + getDataDirsList().hashCode();
+      }
+      if (hasTableId()) {
+        hash = (37 * hash) + TABLE_ID_FIELD_NUMBER;
+        hash = (53 * hash) + getTableId().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -6207,6 +6319,7 @@ public final class Tablet {
         }
         estimatedOnDiskSize_ = 0L;
         dataDirs_ = emptyList(com.google.protobuf.ByteString.class);
+        tableId_ = "";
         return this;
       }
 
@@ -6282,6 +6395,10 @@ public final class Tablet {
         if (((from_bitField0_ & 0x00000200) != 0)) {
           dataDirs_.makeImmutable();
           result.dataDirs_ = dataDirs_;
+        }
+        if (((from_bitField0_ & 0x00000400) != 0)) {
+          result.tableId_ = tableId_;
+          to_bitField0_ |= 0x00000200;
         }
         result.bitField0_ |= to_bitField0_;
       }
@@ -6372,6 +6489,11 @@ public final class Tablet {
             ensureDataDirsIsMutable();
             dataDirs_.addAll(other.dataDirs_);
           }
+          onChanged();
+        }
+        if (other.hasTableId()) {
+          tableId_ = other.tableId_;
+          bitField0_ |= 0x00000400;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -6476,6 +6598,11 @@ public final class Tablet {
                 dataDirs_.add(v);
                 break;
               } // case 82
+              case 90: {
+                tableId_ = input.readBytes();
+                bitField0_ |= 0x00000400;
+                break;
+              } // case 90
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -7173,6 +7300,116 @@ public final class Tablet {
         onChanged();
         return this;
       }
+
+      private java.lang.Object tableId_ = "";
+      /**
+       * <pre>
+       * The table ID that this tablet belongs to. Used by master rebuilder
+       * to preserve original table IDs when rebuilding the syscatalog.
+       * </pre>
+       *
+       * <code>optional string table_id = 11;</code>
+       * @return Whether the tableId field is set.
+       */
+      public boolean hasTableId() {
+        return ((bitField0_ & 0x00000400) != 0);
+      }
+      /**
+       * <pre>
+       * The table ID that this tablet belongs to. Used by master rebuilder
+       * to preserve original table IDs when rebuilding the syscatalog.
+       * </pre>
+       *
+       * <code>optional string table_id = 11;</code>
+       * @return The tableId.
+       */
+      public java.lang.String getTableId() {
+        java.lang.Object ref = tableId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tableId_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * The table ID that this tablet belongs to. Used by master rebuilder
+       * to preserve original table IDs when rebuilding the syscatalog.
+       * </pre>
+       *
+       * <code>optional string table_id = 11;</code>
+       * @return The bytes for tableId.
+       */
+      public com.google.protobuf.ByteString
+          getTableIdBytes() {
+        java.lang.Object ref = tableId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tableId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * The table ID that this tablet belongs to. Used by master rebuilder
+       * to preserve original table IDs when rebuilding the syscatalog.
+       * </pre>
+       *
+       * <code>optional string table_id = 11;</code>
+       * @param value The tableId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTableId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        tableId_ = value;
+        bitField0_ |= 0x00000400;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * The table ID that this tablet belongs to. Used by master rebuilder
+       * to preserve original table IDs when rebuilding the syscatalog.
+       * </pre>
+       *
+       * <code>optional string table_id = 11;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTableId() {
+        tableId_ = getDefaultInstance().getTableId();
+        bitField0_ = (bitField0_ & ~0x00000400);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * The table ID that this tablet belongs to. Used by master rebuilder
+       * to preserve original table IDs when rebuilding the syscatalog.
+       * </pre>
+       *
+       * <code>optional string table_id = 11;</code>
+       * @param value The bytes for tableId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTableIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        tableId_ = value;
+        bitField0_ |= 0x00000400;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -7292,7 +7529,7 @@ public final class Tablet {
       "\030\003 \002(\006\022\025\n\rmax_timestamp\030\004 \002(\006\022;\n\014column_" +
       "stats\030\005 \003(\0132%.kudu.tablet.DeltaStatsPB.C" +
       "olumnStats\0326\n\013ColumnStats\022\016\n\006col_id\030\001 \002(" +
-      "\005\022\027\n\014update_count\030\002 \001(\003:\0010\"\313\002\n\016TabletSta" +
+      "\005\022\027\n\014update_count\030\002 \001(\003:\0010\"\335\002\n\016TabletSta" +
       "tusPB\022\021\n\ttablet_id\030\001 \002(\t\022\022\n\ntable_name\030\002" +
       " \002(\t\0222\n\005state\030\003 \001(\0162\032.kudu.tablet.Tablet" +
       "StatePB:\007UNKNOWN\022L\n\021tablet_data_state\030\010 " +
@@ -7301,7 +7538,8 @@ public final class Tablet {
       "tart_key\030\005 \001(\014\022\017\n\007end_key\030\006 \001(\014\022$\n\tparti" +
       "tion\030\t \001(\0132\021.kudu.PartitionPB\022\036\n\026estimat" +
       "ed_on_disk_size\030\007 \001(\003\022\021\n\tdata_dirs\030\n \003(\014" +
-      "B\030\n\026org.apache.kudu.tablet"
+      "\022\020\n\010table_id\030\013 \001(\tB\030\n\026org.apache.kudu.ta" +
+      "blet"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -7345,7 +7583,7 @@ public final class Tablet {
     internal_static_kudu_tablet_TabletStatusPB_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_kudu_tablet_TabletStatusPB_descriptor,
-        new java.lang.String[] { "TabletId", "TableName", "State", "TabletDataState", "LastStatus", "StartKey", "EndKey", "Partition", "EstimatedOnDiskSize", "DataDirs", });
+        new java.lang.String[] { "TabletId", "TableName", "State", "TabletDataState", "LastStatus", "StartKey", "EndKey", "Partition", "EstimatedOnDiskSize", "DataDirs", "TableId", });
     org.apache.kudu.Common.getDescriptor();
     org.apache.kudu.WireProtocol.getDescriptor();
     org.apache.kudu.tablet.Metadata.getDescriptor();
