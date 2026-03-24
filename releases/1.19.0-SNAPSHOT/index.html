@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu</title>
+    <title>Apache Kudu - Apache Kudu release 1.19.0-SNAPSHOT</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css"/>
 
@@ -47,10 +47,10 @@
                 <li >
                   <a href="/overview.html">Overview</a>
                 </li>
-                <li class="active">
+                <li >
                   <a href="/docs/">Documentation</a>
                 </li>
-                <li >
+                <li class="active">
                   <a href="/releases/">Releases</a>
                 </li>
                 <li >
@@ -95,56 +95,81 @@
           </div><!-- /.container-fluid -->
         </nav>
 
+
+<div class="row-fluid">
+  <div class="col-lg-12 releases">
+
 <!--
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+  http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+
 -->
 
+<h2 id="apache-kudu-release-1190-snapshot">Apache Kudu release 1.19.0-SNAPSHOT</h2>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-9">
+<p>See the <a href="docs/release_notes.html">Kudu 1.19.0-SNAPSHOT Release Notes</a>.</p>
 
-<h1>Apache Kudu</h1>
-      <div id="preamble">
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-This document applies to Apache Kudu version 1.19.0-SNAPSHOT. Please consult the
-<a href="http://kudu.apache.org/releases/">documentation of the appropriate release</a> that&#8217;s applicable
-to the version of the Kudu cluster.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-    </div>
-    <div class="col-md-3">
+<p>Downloads of Kudu 1.19.0-SNAPSHOT are available in the following formats:</p>
 
-    </div>
+<ul>
+  <li><a href="http://www.apache.org/dyn/closer.cgi?path=kudu/1.19.0-SNAPSHOT/apache-kudu-1.19.0-SNAPSHOT.tar.gz">Kudu 1.19.0-SNAPSHOT source tarball</a>
+(<a href="https://www.apache.org/dist/kudu/1.19.0-SNAPSHOT/apache-kudu-1.19.0-SNAPSHOT.tar.gz.sha512">SHA512</a>,
+<a href="https://www.apache.org/dist/kudu/1.19.0-SNAPSHOT/apache-kudu-1.19.0-SNAPSHOT.tar.gz.asc">Signature</a>)</li>
+</ul>
+
+<p>You can use the <a href="https://www.apache.org/dist/kudu/KEYS">KEYS file</a> to verify the included GPG signature.</p>
+
+<p>To verify the integrity of the release, check the following:</p>
+
+<ul>
+  <li>Verify the checksum by downloading the release and the <code class="language-plaintext highlighter-rouge">.sha512</code> file, and
+running the following command:
+    <ul>
+      <li>On Linux: <code class="language-plaintext highlighter-rouge">sha512sum -c apache-kudu-1.19.0-SNAPSHOT.tar.gz.sha512</code></li>
+      <li>On MacOS: <code class="language-plaintext highlighter-rouge">shasum -a 512 -c apache-kudu-1.19.0-SNAPSHOT.tar.gz.sha512</code></li>
+    </ul>
+  </li>
+  <li>Verify the signature by downloading the release and the <code class="language-plaintext highlighter-rouge">.asc</code> file, and
+doing the following:
+    <ul>
+      <li>Import the KEYS file to the GPG keychain by running <code class="language-plaintext highlighter-rouge">gpg --import KEYS</code></li>
+      <li>Run <code class="language-plaintext highlighter-rouge">gpg --verify apache-kudu-1.19.0-SNAPSHOT.tar.gz.asc apache-kudu-1.19.0-SNAPSHOT.tar.gz</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>Additional links:</p>
+
+<ul>
+  <li><a href="docs/">Kudu 1.19.0-SNAPSHOT Documentation</a></li>
+  <li><a href="apidocs/">Kudu 1.19.0-SNAPSHOT Java API docs</a></li>
+  <li><a href="cpp-client-api/">Kudu 1.19.0-SNAPSHOT C++ API docs</a></li>
+</ul>
+
+
   </div>
 </div>
+
       <footer class="footer">
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2026 The Apache Software Foundation.  Last updated 2026-03-24 14:25:02 UTC 
+            Copyright &copy; 2026 The Apache Software Foundation. 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
